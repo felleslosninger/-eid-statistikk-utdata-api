@@ -1,10 +1,10 @@
-package no.difi.statistics.query.elasticsearch.commands;
+package no.difi.statistics.elasticsearch.commands;
 
 import no.difi.statistics.elasticsearch.Timestamp;
 import no.difi.statistics.model.TimeRange;
 import no.difi.statistics.model.TimeSeriesDefinition;
 import no.difi.statistics.model.TimeSeriesPoint;
-import no.difi.statistics.query.model.QueryFilter;
+import no.difi.statistics.model.QueryFilter;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.search.SearchHit;

@@ -1,7 +1,7 @@
-package no.difi.statistics.query.elasticsearch.lifecycle;
+package no.difi.statistics.elasticsearch.lifecycle;
 
-import no.difi.statistics.query.config.AppConfig;
-import no.difi.statistics.query.elasticsearch.config.ElasticsearchConfig;
+import no.difi.statistics.config.AppConfig;
+import no.difi.statistics.elasticsearch.config.ElasticsearchConfig;
 import org.springframework.boot.SpringApplication;
 
 public class Start {

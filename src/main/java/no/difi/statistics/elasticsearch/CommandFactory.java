@@ -1,6 +1,6 @@
 package no.difi.statistics.elasticsearch;
 
-import no.difi.statistics.query.elasticsearch.commands.*;
+import no.difi.statistics.elasticsearch.commands.*;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

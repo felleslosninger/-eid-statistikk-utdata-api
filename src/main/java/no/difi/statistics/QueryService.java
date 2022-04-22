@@ -1,10 +1,7 @@
-package no.difi.statistics.query;
+package no.difi.statistics;
 
-import no.difi.statistics.model.MeasurementDistance;
-import no.difi.statistics.model.TimeSeriesDefinition;
-import no.difi.statistics.model.TimeSeriesPoint;
-import no.difi.statistics.model.PercentileFilter;
-import no.difi.statistics.query.model.QueryFilter;
+import no.difi.statistics.model.*;
+import no.difi.statistics.model.QueryFilter;
 
 import java.util.List;
 
@@ -23,4 +20,6 @@ public interface QueryService {
     TimeSeriesPoint sum(TimeSeriesDefinition seriesDefinition, QueryFilter queryFilter);
 
     List<TimeSeriesPoint> sumHistogram(TimeSeriesDefinition seriesDefinition, MeasurementDistance targetDistance, QueryFilter queryFilter);
+
+    List<TimeSeriesPoint> query(TimeSeriesDefinition seriesDefinition, QueryFilter queryFilter);
 }

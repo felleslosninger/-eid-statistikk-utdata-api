@@ -1,4 +1,4 @@
-package no.difi.statistics.query.elasticsearch.helpers;
+package no.difi.statistics.elasticsearch.helpers;
 
 import static no.difi.statistics.test.utils.DataOperations.lastPer;
 

@@ -1,10 +1,10 @@
-package no.difi.statistics.query.elasticsearch.config;
+package no.difi.statistics.elasticsearch.config;
 
 import no.difi.statistics.elasticsearch.Client;
-import no.difi.statistics.query.QueryService;
-import no.difi.statistics.query.config.BackendConfig;
-import no.difi.statistics.query.elasticsearch.*;
-import no.difi.statistics.query.elasticsearch.commands.*;
+import no.difi.statistics.QueryService;
+import no.difi.statistics.config.BackendConfig;
+import no.difi.statistics.elasticsearch.*;
+import no.difi.statistics.elasticsearch.commands.*;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.message.BasicHeader;

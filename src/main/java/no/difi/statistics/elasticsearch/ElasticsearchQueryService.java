@@ -4,8 +4,8 @@ import no.difi.statistics.model.MeasurementDistance;
 import no.difi.statistics.model.TimeSeriesDefinition;
 import no.difi.statistics.model.TimeSeriesPoint;
 import no.difi.statistics.model.PercentileFilter;
-import no.difi.statistics.query.model.QueryFilter;
-import no.difi.statistics.query.QueryService;
+import no.difi.statistics.model.QueryFilter;
+import no.difi.statistics.QueryService;
 
 import java.util.List;
 

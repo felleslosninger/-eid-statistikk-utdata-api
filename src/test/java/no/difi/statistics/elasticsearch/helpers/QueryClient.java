@@ -1,4 +1,4 @@
-package no.difi.statistics.query.elasticsearch.helpers;
+package no.difi.statistics.elasticsearch.helpers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

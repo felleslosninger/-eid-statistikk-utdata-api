@@ -1,4 +1,4 @@
-package no.difi.statistics.query.elasticsearch.commands;
+package no.difi.statistics.elasticsearch.commands;
 
 import no.difi.statistics.model.TimeSeriesPoint;
 

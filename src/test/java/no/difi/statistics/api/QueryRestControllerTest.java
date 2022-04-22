@@ -1,12 +1,8 @@
-package no.difi.statistics.query.api;
+package no.difi.statistics.api;
 
-import no.difi.statistics.model.RelationalOperator;
-import no.difi.statistics.model.TimeSeriesDefinition;
-import no.difi.statistics.model.TimeSeriesPoint;
-import no.difi.statistics.model.PercentileFilter;
-import no.difi.statistics.query.model.QueryFilter;
-import no.difi.statistics.query.config.AppConfig;
-import no.difi.statistics.query.config.BackendConfig;
+import no.difi.statistics.config.AppConfig;
+import no.difi.statistics.config.BackendConfig;
+import no.difi.statistics.model.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +18,7 @@ import java.time.format.DateTimeFormatter;
 
 import static java.util.Collections.singletonList;
 import static no.difi.statistics.model.MeasurementDistance.minutes;
-import static no.difi.statistics.query.model.QueryFilter.queryFilter;
+import static no.difi.statistics.model.QueryFilter.queryFilter;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
