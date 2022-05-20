@@ -1,6 +1,6 @@
 package no.difi.statistics.api;
 
-import no.difi.statistics.config.AppConfig;
+import no.difi.statistics.UtdataAPI;
 import no.difi.statistics.config.BackendConfig;
 import no.difi.statistics.model.*;
 import org.junit.Test;
@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -19,9 +21,10 @@ import java.time.format.DateTimeFormatter;
 import static java.util.Collections.singletonList;
 import static no.difi.statistics.model.MeasurementDistance.minutes;
 import static no.difi.statistics.model.QueryFilter.queryFilter;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -30,10 +33,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Tests the REST API in isolation with Spring Mock MVC as driver and a Mockito-stubbed service.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(
-        classes = {AppConfig.class, MockBackendConfig.class}
-)
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"management.endpoints.enabled-by-default = false", "spring.autoconfigure.exclude = org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration"})
+@ContextConfiguration(classes = {QueryRestController.class, UtdataAPI.class})
 @AutoConfigureMockMvc
+@ActiveProfiles("unittest")
 public class QueryRestControllerTest {
 
     @Autowired
@@ -50,7 +53,7 @@ public class QueryRestControllerTest {
                 get("/{owner}/{seriesName}/minutes/last", anOwner() ,timeSeries)
                         .param("from", from)
                         .param("to", to)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .contentType(MediaType.APPLICATION_JSON)
         );
         assertNormalResponse(result);
         verify(backendConfig.queryService()).last(
@@ -76,7 +79,7 @@ public class QueryRestControllerTest {
                         .param("percentile", String.valueOf(percentile))
                         .param("measurementId", measurementId)
                         .param("operator", operator.toString())
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .contentType(MediaType.APPLICATION_JSON)
         );
         assertNormalResponse(result);
         verify(backendConfig.queryService()).query(

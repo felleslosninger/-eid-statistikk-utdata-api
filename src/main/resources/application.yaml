@@ -1,0 +1,17 @@
+file:
+    base:
+        difi-statistikk: /run/secrets/utdata-api-elasticcloud-felles
+logging:
+    level:
+        'no':
+            difi: INFO
+        org: INFO
+management:
+    endpoints:
+        web:
+            base-path: /
+spring:
+    jackson:
+        default-property-inclusion: NON_EMPTY
+        serialization:
+            WRITE_DATES_AS_TIMESTAMPS: false

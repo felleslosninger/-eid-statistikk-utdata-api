@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import no.difi.statistics.elasticsearch.Client;
 import no.difi.statistics.model.MeasurementDistance;
 import no.difi.statistics.model.TimeSeriesPoint;
-import no.difi.statistics.config.AppConfig;
 import no.difi.statistics.elasticsearch.config.ElasticsearchConfig;
 import no.difi.statistics.elasticsearch.helpers.*;
 import no.difi.statistics.test.utils.DataOperations;
@@ -23,6 +22,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -59,9 +59,10 @@ import static org.junit.Assert.assertEquals;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-@ContextConfiguration(classes = {AppConfig.class, ElasticsearchConfig.class}, initializers = ElasticsearchQueryServiceTest.Initializer.class)
+@ContextConfiguration(classes = {UtdataAPI.class, ElasticsearchConfig.class}, initializers = ElasticsearchQueryServiceTest.Initializer.class)
 @RunWith(SpringRunner.class)
 @TestPropertySource(properties = {"file.base.difi-statistikk=src/test/resources/apikey"})
+@ActiveProfiles("test")
 public class ElasticsearchQueryServiceTest {
 
     @ClassRule
@@ -87,7 +88,7 @@ public class ElasticsearchQueryServiceTest {
     private ZonedDateTime startOfNovember2017 = ZonedDateTime.of(2017, 11, 1, 0, 0, 0, 0, UTC);
     private final static String measurementId = "count";
     private final static String series = "test";
-    private final static String owner = "test_owner"; // Index names must be lower case in Elasticsearch
+    private final static String owner = "test_owner"; // Index names must be lowercase in Elasticsearch
 
     @Autowired
     private Client client;

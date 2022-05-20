@@ -20,6 +20,4 @@ public interface QueryService {
     TimeSeriesPoint sum(TimeSeriesDefinition seriesDefinition, QueryFilter queryFilter);
 
     List<TimeSeriesPoint> sumHistogram(TimeSeriesDefinition seriesDefinition, MeasurementDistance targetDistance, QueryFilter queryFilter);
-
-    List<TimeSeriesPoint> query(TimeSeriesDefinition seriesDefinition, QueryFilter queryFilter);
 }

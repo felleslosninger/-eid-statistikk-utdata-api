@@ -1,16 +1,15 @@
 package no.difi.statistics.api;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import no.difi.statistics.model.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import no.difi.statistics.QueryService;
+import no.difi.statistics.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
-import springfox.documentation.annotations.ApiIgnore;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.List;
 import static java.lang.String.format;
 import static no.difi.statistics.model.QueryFilter.queryFilter;
 
-@Api(tags = "Statistics-query", description = "Hent ut data frå statistikk-databasen")
+@Tag(name = "Statistics-query", description = "Hent ut data frå statistikk-databasen")
 @RestController
 public class QueryRestController {
 
@@ -37,25 +36,25 @@ public class QueryRestController {
         return e.getMessage();
     }
 
-    @ApiIgnore
+    @Parameter(hidden = true)
     @GetMapping("/")
     public RedirectView index() {
         return new RedirectView("swagger-ui.html");
     }
 
-    @ApiOperation(value = "Hent ut liste over tilgjengelege tidsseriar")
+    @Operation(summary = "Hent ut liste over tilgjengelege tidsseriar")
     @GetMapping("/meta")
     public List<TimeSeriesDefinition> available() {
         return service.availableTimeSeries();
     }
 
-    @ApiOperation(value = "Hent data frå ein tidsserie")
+    @Operation(summary = "Hent data frå ein tidsserie")
     @GetMapping("{owner}/{seriesName}/{distance}")
     public List<TimeSeriesPoint> query(
-            @ApiParam(value = "eigar av tidsserien i form av eit organisasjonsnummer", example = "991825827", required = true)
+            @Parameter(name = "eigar av tidsserien i form av eit organisasjonsnummer", example = "991825827", required = true)
             @PathVariable String owner,
             @PathVariable String seriesName,
-            @ApiParam(value = "tidsserien sin måleavstand", required = true)
+            @Parameter(name = "tidsserien sin måleavstand", required = true)
             @PathVariable MeasurementDistance distance,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime to,
@@ -66,10 +65,10 @@ public class QueryRestController {
         return service.query(seriesDefinition, queryFilter().range(from, to).categories(categories).perCategory(perCategory).build());
     }
 
-    @ApiOperation(value = "Hent nyaste datapunkt frå ein tidsserie")
+    @Operation(summary = "Hent nyaste datapunkt frå ein tidsserie")
     @GetMapping("{owner}/{seriesName}/{distance}/last")
     public TimeSeriesPoint last(
-            @ApiParam(value = "eigar av tidsserien i form av eit organisasjonsnummer", example = "991825827", required = true)
+            @Parameter(name = "eigar av tidsserien i form av eit organisasjonsnummer", example = "991825827", required = true)
             @PathVariable String owner,
             @PathVariable String seriesName,
             @PathVariable MeasurementDistance distance,
@@ -81,10 +80,10 @@ public class QueryRestController {
         return service.last(seriesDefinition, queryFilter().range(from, to).categories(categories).build());
     }
 
-    @ApiOperation(value = "Hent nyaste datapunkt frå ein tidsserie")
+    @Operation(summary = "Hent nyaste datapunkt frå ein tidsserie")
     @GetMapping("{owner}/{seriesName}/{distance}/last/{targetDistance}")
     public List<TimeSeriesPoint> lastHistogram(
-            @ApiParam(value = "eigar av tidsserien i form av eit organisasjonsnummer", example = "991825827", required = true)
+            @Parameter(name = "eigar av tidsserien i form av eit organisasjonsnummer", example = "991825827", required = true)
             @PathVariable String owner,
             @PathVariable String seriesName,
             @PathVariable MeasurementDistance distance,
@@ -98,11 +97,11 @@ public class QueryRestController {
         return service.lastHistogram(seriesDefinition, targetDistance, queryFilter().range(from, to).categories(categories).build());
     }
 
-    @ApiOperation(value = "Hent eitt datapunkt med sum av målingar",
-        notes = "Returnerer eitt datapunkt")
+    @Operation(summary = "Hent eitt datapunkt med sum av målingar",
+        description = "Returnerer eitt datapunkt")
     @GetMapping("{owner}/{seriesName}/{distance}/sum")
     public TimeSeriesPoint sum(
-            @ApiParam(value = "eigar av tidsserien i form av eit organisasjonsnummer", example = "991825827", required = true)
+            @Parameter(name = "eigar av tidsserien i form av eit organisasjonsnummer", example = "991825827", required = true)
             @PathVariable String owner,
             @PathVariable String seriesName,
             @PathVariable MeasurementDistance distance,
@@ -114,11 +113,11 @@ public class QueryRestController {
         return service.sum(seriesDefinition, queryFilter().range(from, to).categories(categories).build());
     }
 
-    @ApiOperation(value = "Hent datapunkter med summar av målingar, omforma til ny måleavstand",
-        notes = "Ein tidsserie med måleavstand på timar kan for eksempel summerast opp på dag, månad eller årsnivå.")
+    @Operation(summary = "Hent datapunkter med summar av målingar, omforma til ny måleavstand",
+        description = "Ein tidsserie med måleavstand på timar kan for eksempel summerast opp på dag, månad eller årsnivå.")
     @GetMapping("{owner}/{seriesName}/{distance}/sum/{targetDistance}")
     public List<TimeSeriesPoint> sumHistogram(
-            @ApiParam(value = "eigar av tidsserien i form av eit organisasjonsnummer", example = "991825827", required = true)
+            @Parameter(name = "eigar av tidsserien i form av eit organisasjonsnummer", example = "991825827", required = true)
             @PathVariable String owner,
             @PathVariable String seriesName,
             @PathVariable MeasurementDistance distance,
@@ -133,9 +132,9 @@ public class QueryRestController {
     }
 
     @GetMapping(path = "{owner}/{seriesName}/{distance}/percentile", params = {"percentile", "measurementId", "operator"})
-    @ApiOperation(value = "", notes = "<b>Experimental feature -- use at your own risk. Categorized series are not supported.</b>")
+    @Operation(summary = "", description = "<b>Experimental feature -- use at your own risk. Categorized series are not supported.</b>")
     public List<TimeSeriesPoint> relationalToPercentile(
-            @ApiParam(value = "eigar av tidsserien i form av eit organisasjonsnummer", example = "991825827", required = true)
+            @Parameter(name = "eigar av tidsserien i form av eit organisasjonsnummer", example = "991825827", required = true)
             @PathVariable String owner,
             @PathVariable String seriesName,
             @PathVariable MeasurementDistance distance,
