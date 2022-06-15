@@ -1,15 +1,22 @@
-file:
-    base:
-        difi-statistikk: /run/secrets/utdata-api-elasticcloud-felles
 logging:
     level:
         'no':
             difi: INFO
         org: INFO
+
 management:
     endpoints:
         web:
             base-path: /
+
+'no':
+    difi:
+        statistics:
+            elasticsearch:
+                host: localhost
+                port: 9200
+                apikey: fake-secret
+
 spring:
     jackson:
         default-property-inclusion: NON_EMPTY

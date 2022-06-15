@@ -3,14 +3,20 @@ package no.difi.statistics;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import no.difi.statistics.elasticsearch.Client;
+import no.difi.statistics.elasticsearch.config.ElasticsearchConfig;
+import no.difi.statistics.elasticsearch.helpers.QueryClient;
+import no.difi.statistics.elasticsearch.helpers.TimeSeriesGenerator;
+import no.difi.statistics.elasticsearch.helpers.TimeSeriesQuery;
+import no.difi.statistics.elasticsearch.helpers.Verification;
 import no.difi.statistics.model.MeasurementDistance;
 import no.difi.statistics.model.TimeSeriesPoint;
-import no.difi.statistics.elasticsearch.config.ElasticsearchConfig;
-import no.difi.statistics.elasticsearch.helpers.*;
 import no.difi.statistics.test.utils.DataOperations;
 import no.difi.statistics.test.utils.ElasticsearchHelper;
 import no.difi.statistics.test.utils.ElasticsearchRule;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,9 +28,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
@@ -41,7 +45,6 @@ import java.util.function.Predicate;
 import static java.lang.String.format;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static no.difi.statistics.elasticsearch.Timestamp.truncatedTimestamp;
-import static no.difi.statistics.model.MeasurementDistance.*;
 import static no.difi.statistics.elasticsearch.helpers.AvailableSeriesQuery.calculatedAvailableSeries;
 import static no.difi.statistics.elasticsearch.helpers.AvailableSeriesQuery.requestingAvailableTimeSeries;
 import static no.difi.statistics.elasticsearch.helpers.LastHistogramQuery.requestingLastHistogram;
@@ -53,6 +56,7 @@ import static no.difi.statistics.elasticsearch.helpers.SumQuery.requestingSum;
 import static no.difi.statistics.elasticsearch.helpers.TimeSeriesQuery.requestingSeries;
 import static no.difi.statistics.elasticsearch.helpers.TimeSeriesQuery.withAttributes;
 import static no.difi.statistics.elasticsearch.helpers.Verification.given;
+import static no.difi.statistics.model.MeasurementDistance.*;
 import static no.difi.statistics.test.utils.DataGenerator.createRandomTimeSeries;
 import static no.difi.statistics.test.utils.DataOperations.*;
 import static org.junit.Assert.assertEquals;
@@ -61,8 +65,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ContextConfiguration(classes = {UtdataAPI.class, ElasticsearchConfig.class}, initializers = ElasticsearchQueryServiceTest.Initializer.class)
 @RunWith(SpringRunner.class)
-@TestPropertySource(properties = {"file.base.difi-statistikk=src/test/resources/apikey"})
-@ActiveProfiles("test")
 public class ElasticsearchQueryServiceTest {
 
     @ClassRule

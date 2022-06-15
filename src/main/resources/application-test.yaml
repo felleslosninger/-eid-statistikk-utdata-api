@@ -1,0 +1,7 @@
+'no':
+    difi:
+        statistics:
+            elasticsearch:
+                host: 7834108d7d5d491587be2a1a9452d636.northeurope.azure.elastic-cloud.com
+                port: 9243
+                apikey: ${ELASTICSEARCH_API_KEY}
