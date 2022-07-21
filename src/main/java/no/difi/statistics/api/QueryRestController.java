@@ -54,6 +54,7 @@ public class QueryRestController {
     public List<TimeSeriesPoint> query(
             @Parameter(name = "owner", example = "991825827", required = true, description = "eigar av tidsserien i form av eit organisasjonsnummer")
             @PathVariable String owner,
+            @Parameter(name = "seriesName", example = "idporten-innlogging", required = true, description = "namn på tidsserie")
             @PathVariable String seriesName,
             @Parameter(name = "distance", required = true, description = "tidsserien sin måleavstand")
             @PathVariable MeasurementDistance distance,
@@ -62,18 +63,18 @@ public class QueryRestController {
             @RequestParam(required = false) String categories,
             @RequestParam(required = false) String perCategory
     ) {
-        logger.info("owner: {}, seriesName: {}, distance: {}", owner, seriesName, distance);
         TimeSeriesDefinition seriesDefinition = TimeSeriesDefinition.builder().name(seriesName).distance(distance).owner(owner);
-        //TimeSeriesDefinition seriesDefinition = TimeSeriesDefinition.builder().name(seriesName).distance(MeasurementDistance.hours).owner(owner);
         return service.query(seriesDefinition, queryFilter().range(from, to).categories(categories).perCategory(perCategory).build());
     }
 
     @Operation(summary = "Hent nyaste datapunkt frå ein tidsserie")
-    @GetMapping("{owner}/{seriesName}/{distance}/last")
+    @GetMapping("/{owner}/{seriesName}/{distance}/last")
     public TimeSeriesPoint last(
-            @Parameter(name = "eigar av tidsserien i form av eit organisasjonsnummer", example = "991825827", required = true)
+            @Parameter(name = "owner", example = "991825827", required = true, description = "eigar av tidsserien i form av eit organisasjonsnummer")
             @PathVariable String owner,
+            @Parameter(name = "seriesName", example = "idporten-innlogging", required = true, description = "namn på tidsserie")
             @PathVariable String seriesName,
+            @Parameter(name = "distance", required = true, description = "tidsserien sin måleavstand")
             @PathVariable MeasurementDistance distance,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime to,
@@ -86,9 +87,11 @@ public class QueryRestController {
     @Operation(summary = "Hent nyaste datapunkt frå ein tidsserie")
     @GetMapping("{owner}/{seriesName}/{distance}/last/{targetDistance}")
     public List<TimeSeriesPoint> lastHistogram(
-            @Parameter(name = "eigar av tidsserien i form av eit organisasjonsnummer", example = "991825827", required = true)
+            @Parameter(name = "owner", example = "991825827", required = true, description = "eigar av tidsserien i form av eit organisasjonsnummer")
             @PathVariable String owner,
+            @Parameter(name = "seriesName", example = "idporten-innlogging", required = true, description = "namn på tidsserie")
             @PathVariable String seriesName,
+            @Parameter(name = "distance", required = true, description = "tidsserien sin måleavstand")
             @PathVariable MeasurementDistance distance,
             @PathVariable MeasurementDistance targetDistance,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime from,
@@ -104,9 +107,11 @@ public class QueryRestController {
         description = "Returnerer eitt datapunkt")
     @GetMapping("{owner}/{seriesName}/{distance}/sum")
     public TimeSeriesPoint sum(
-            @Parameter(name = "eigar av tidsserien i form av eit organisasjonsnummer", example = "991825827", required = true)
+            @Parameter(name = "owner", example = "991825827", required = true, description = "eigar av tidsserien i form av eit organisasjonsnummer")
             @PathVariable String owner,
+            @Parameter(name = "seriesName", example = "idporten-innlogging", required = true, description = "namn på tidsserie")
             @PathVariable String seriesName,
+            @Parameter(name = "distance", required = true, description = "tidsserien sin måleavstand")
             @PathVariable MeasurementDistance distance,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime to,
@@ -120,9 +125,11 @@ public class QueryRestController {
         description = "Ein tidsserie med måleavstand på timar kan for eksempel summerast opp på dag, månad eller årsnivå.")
     @GetMapping("{owner}/{seriesName}/{distance}/sum/{targetDistance}")
     public List<TimeSeriesPoint> sumHistogram(
-            @Parameter(name = "eigar av tidsserien i form av eit organisasjonsnummer", example = "991825827", required = true)
+            @Parameter(name = "owner", example = "991825827", required = true, description = "eigar av tidsserien i form av eit organisasjonsnummer")
             @PathVariable String owner,
+            @Parameter(name = "seriesName", example = "idporten-innlogging", required = true, description = "namn på tidsserie")
             @PathVariable String seriesName,
+            @Parameter(name = "distance", required = true, description = "tidsserien sin måleavstand")
             @PathVariable MeasurementDistance distance,
             @PathVariable MeasurementDistance targetDistance,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime from,
@@ -137,9 +144,11 @@ public class QueryRestController {
     @GetMapping(path = "{owner}/{seriesName}/{distance}/percentile", params = {"percentile", "measurementId", "operator"})
     @Operation(summary = "", description = "<b>Experimental feature -- use at your own risk. Categorized series are not supported.</b>")
     public List<TimeSeriesPoint> relationalToPercentile(
-            @Parameter(name = "eigar av tidsserien i form av eit organisasjonsnummer", example = "991825827", required = true)
+            @Parameter(name = "owner", example = "991825827", required = true, description = "eigar av tidsserien i form av eit organisasjonsnummer")
             @PathVariable String owner,
+            @Parameter(name = "seriesName", example = "idporten-innlogging", required = true, description = "namn på tidsserie")
             @PathVariable String seriesName,
+            @Parameter(name = "distance", required = true, description = "tidsserien sin måleavstand")
             @PathVariable MeasurementDistance distance,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime to,

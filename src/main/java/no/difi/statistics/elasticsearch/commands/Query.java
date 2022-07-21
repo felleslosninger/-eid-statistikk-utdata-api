@@ -1,8 +1,8 @@
 package no.difi.statistics.elasticsearch.commands;
 
 import no.difi.statistics.elasticsearch.Timestamp;
-import no.difi.statistics.model.TimeRange;
 import no.difi.statistics.model.QueryFilter;
+import no.difi.statistics.model.TimeRange;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.IndicesOptions;
@@ -27,7 +27,6 @@ import static org.elasticsearch.search.sort.SortOrder.ASC;
 
 public abstract class Query {
 
-    private static final String indexType = "default";
     private static final String timeFieldName = "timestamp";
     RestHighLevelClient elasticsearchClient;
 
@@ -60,7 +59,6 @@ public abstract class Query {
             searchSource.aggregation(aggregation);
         return new SearchRequest(indexNames.toArray(new String[0]))
                 .indicesOptions(IndicesOptions.fromOptions(true, true, true, false))
-                .types(indexType)
                 .source(searchSource);
     }
 
