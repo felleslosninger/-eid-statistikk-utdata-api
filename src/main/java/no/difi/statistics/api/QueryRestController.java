@@ -33,7 +33,7 @@ public class QueryRestController {
     @ExceptionHandler
     @ResponseStatus
     public String handle(Exception e) {
-        logger.error("Query failed.", e);
+        logger.error("Query failed", e);
         return e.getMessage();
     }
 
@@ -50,19 +50,21 @@ public class QueryRestController {
     }
 
     @Operation(summary = "Hent data frå ein tidsserie")
-    @GetMapping("{owner}/{seriesName}/{distance}")
+    @GetMapping("/{owner}/{seriesName}/{distance}")
     public List<TimeSeriesPoint> query(
-            @Parameter(name = "eigar av tidsserien i form av eit organisasjonsnummer", example = "991825827", required = true)
+            @Parameter(name = "owner", example = "991825827", required = true, description = "eigar av tidsserien i form av eit organisasjonsnummer")
             @PathVariable String owner,
             @PathVariable String seriesName,
-            @Parameter(name = "tidsserien sin måleavstand", required = true)
+            @Parameter(name = "distance", required = true, description = "tidsserien sin måleavstand")
             @PathVariable MeasurementDistance distance,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime to,
             @RequestParam(required = false) String categories,
             @RequestParam(required = false) String perCategory
     ) {
+        logger.info("owner: {}, seriesName: {}, distance: {}", owner, seriesName, distance);
         TimeSeriesDefinition seriesDefinition = TimeSeriesDefinition.builder().name(seriesName).distance(distance).owner(owner);
+        //TimeSeriesDefinition seriesDefinition = TimeSeriesDefinition.builder().name(seriesName).distance(MeasurementDistance.hours).owner(owner);
         return service.query(seriesDefinition, queryFilter().range(from, to).categories(categories).perCategory(perCategory).build());
     }
 

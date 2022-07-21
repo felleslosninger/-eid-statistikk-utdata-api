@@ -13,11 +13,9 @@ import no.difi.statistics.model.TimeSeriesPoint;
 import no.difi.statistics.test.utils.DataOperations;
 import no.difi.statistics.test.utils.ElasticsearchHelper;
 import no.difi.statistics.test.utils.ElasticsearchRule;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -29,7 +27,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import java.io.IOException;
@@ -64,7 +61,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ContextConfiguration(classes = {UtdataAPI.class, ElasticsearchConfig.class}, initializers = ElasticsearchQueryServiceTest.Initializer.class)
-@RunWith(SpringRunner.class)
 public class ElasticsearchQueryServiceTest {
 
     @ClassRule
@@ -102,7 +98,7 @@ public class ElasticsearchQueryServiceTest {
     @Autowired
     private Environment environment;
 
-    @Before
+    @BeforeEach
     public void prepare() {
         helper = new ElasticsearchHelper(client);
         helper.waitForGreenStatus();
@@ -118,7 +114,7 @@ public class ElasticsearchQueryServiceTest {
         QueryClient.objectMapper = objectMapper;
     }
 
-    @After
+    @AfterEach
     public void cleanup() {
         helper.clear();
     }

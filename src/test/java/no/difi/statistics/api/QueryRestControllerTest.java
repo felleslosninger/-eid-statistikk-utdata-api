@@ -3,15 +3,13 @@ package no.difi.statistics.api;
 import no.difi.statistics.UtdataAPI;
 import no.difi.statistics.config.BackendConfig;
 import no.difi.statistics.model.*;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -32,7 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Tests the REST API in isolation with Spring Mock MVC as driver and a Mockito-stubbed service.
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"management.endpoints.enabled-by-default = false", "spring.autoconfigure.exclude = org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration"})
 @ContextConfiguration(classes = {QueryRestController.class, UtdataAPI.class})
 @AutoConfigureMockMvc
