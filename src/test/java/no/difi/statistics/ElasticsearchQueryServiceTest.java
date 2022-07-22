@@ -12,12 +12,8 @@ import no.difi.statistics.model.MeasurementDistance;
 import no.difi.statistics.model.TimeSeriesPoint;
 import no.difi.statistics.test.utils.DataOperations;
 import no.difi.statistics.test.utils.ElasticsearchHelper;
-import no.difi.statistics.test.utils.ElasticsearchRule;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -29,8 +25,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
 import java.time.ZoneId;
@@ -60,26 +57,41 @@ import static no.difi.statistics.model.MeasurementDistance.*;
 import static no.difi.statistics.test.utils.DataGenerator.createRandomTimeSeries;
 import static no.difi.statistics.test.utils.DataOperations.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ContextConfiguration(classes = {UtdataAPI.class, ElasticsearchConfig.class}, initializers = ElasticsearchQueryServiceTest.Initializer.class)
-@RunWith(SpringRunner.class)
 public class ElasticsearchQueryServiceTest {
 
+    private static final String ELASTICSEARCH_VERSION = "7.17.2";
     @ClassRule
-    public static ElasticsearchRule elasticsearchRule = new ElasticsearchRule();
+    public static ElasticsearchContainer container = new ElasticsearchContainer(
+            DockerImageName
+                    .parse("docker.elastic.co/elasticsearch/elasticsearch")
+                    .withTag(ELASTICSEARCH_VERSION));
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
         @Override
         public void initialize(ConfigurableApplicationContext applicationContext) {
             TestPropertyValues.of(
-                    "no.difi.statistics.elasticsearch.host=" + elasticsearchRule.getHost(),
-                    "no.difi.statistics.elasticsearch.port=" + elasticsearchRule.getPort()
+                    "no.difi.statistics.elasticsearch.host=" + container.getHost(),
+                    "no.difi.statistics.elasticsearch.port=" + container.getFirstMappedPort()
             ).applyTo(applicationContext);
         }
 
+    }
+
+    @BeforeAll
+    static void setUp() {
+        container.start();
+        assertTrue(container.isRunning());
+    }
+
+    @AfterAll
+    static void tearDown() {
+        container.stop();
     }
 
     private final static ZoneId UTC = ZoneId.of("UTC");
@@ -102,7 +114,7 @@ public class ElasticsearchQueryServiceTest {
     @Autowired
     private Environment environment;
 
-    @Before
+    @BeforeEach
     public void prepare() {
         helper = new ElasticsearchHelper(client);
         helper.waitForGreenStatus();
@@ -118,7 +130,7 @@ public class ElasticsearchQueryServiceTest {
         QueryClient.objectMapper = objectMapper;
     }
 
-    @After
+    @AfterEach
     public void cleanup() {
         helper.clear();
     }
