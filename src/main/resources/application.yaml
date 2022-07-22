@@ -1,24 +1,33 @@
 logging:
-    level:
-        'no':
-            difi: INFO
-        org: INFO
-
-management:
-    endpoints:
-        web:
-            base-path: /
+  level:
+    'no':
+      difi: INFO
+    org: INFO
 
 'no':
-    difi:
-        statistics:
-            elasticsearch:
-                host: localhost
-                port: 9200
-                apikey: fake-secret
+  difi:
+    statistics:
+      elasticsearch:
+        host: localhost
+        port: 9200
+        apikey: fake-secret
 
 spring:
-    jackson:
-        default-property-inclusion: NON_EMPTY
-        serialization:
-            WRITE_DATES_AS_TIMESTAMPS: false
+  jackson:
+    default-property-inclusion: NON_EMPTY
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
+# Spring Boot Actuator
+management:
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: "health, info, version, prometheus"
+  endpoint:
+    health:
+      show-details: always
+      enabled: true
+      probes:
+        enabled: true
