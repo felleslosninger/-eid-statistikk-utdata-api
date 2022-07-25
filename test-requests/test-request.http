@@ -1,6 +1,5 @@
-### Test with an invalid pid to see error Response
-POST http://localhost:8080/api/v1/idporten/person/.search
+### GET idporten-innlogging
+#GET http://localhost:8080/991825827/idporten-innlogging/hours?from=2022-06-22T11:00&to=2022-06-22T12:00"
+GET http://localhost:8080/991825827/idporten-innlogging/hours/last
 Accept: application/json
 Content-Type: application/json
-
-{"pid": "01010111111"}
