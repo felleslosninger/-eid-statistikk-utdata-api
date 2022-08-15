@@ -1,24 +1,28 @@
 package no.difi.statistics.api;
 
+import no.difi.statistics.QueryService;
 import no.difi.statistics.UtdataAPI;
 import no.difi.statistics.config.BackendConfig;
 import no.difi.statistics.model.*;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static java.util.Collections.singletonList;
 import static no.difi.statistics.model.MeasurementDistance.minutes;
 import static no.difi.statistics.model.QueryFilter.queryFilter;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,7 +37,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"management.endpoints.enabled-by-default = false", "spring.autoconfigure.exclude = org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration"})
 @ContextConfiguration(classes = {QueryRestController.class, UtdataAPI.class})
 @AutoConfigureMockMvc
-@ActiveProfiles("unittest")
 public class QueryRestControllerTest {
 
     @Autowired
@@ -41,13 +44,16 @@ public class QueryRestControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @MockBean
+    private QueryService queryServiceMock;
+
     @Test
     public void whenRequestingLastPointThenServiceReceivesCorrespondingRequest() throws Exception {
         final String timeSeries = "a_series";
         final String from = "2013-10-12T12:13:13.123+02:00";
         final String to = "2013-10-12T13:13:13.123+02:00";
         ResultActions result = mockMvc.perform(
-                get("/{owner}/{seriesName}/minutes/last", anOwner() ,timeSeries)
+                get("/{owner}/{seriesName}/minutes/last", anOwner(), timeSeries)
                         .param("from", from)
                         .param("to", to)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -57,6 +63,35 @@ public class QueryRestControllerTest {
                 TimeSeriesDefinition.builder().name(timeSeries).distance(minutes).owner(anOwner()),
                 queryFilter().range(parseTimestamp(from), parseTimestamp(to)).build()
         );
+    }
+
+    @Test
+    public void correctTimeFormat() throws Exception {
+        final String timeSeries = "a_series";
+        final String from = "2013-10-12T12:13:13.123+02:00";
+        final String to = "2013-10-12T13:13:13.123+02:00";
+        final ZonedDateTime expectedDate = ZonedDateTime.of(2022, 8, 15, 12, 0, 0, 0, ZoneId.systemDefault());
+        final DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+
+        when(queryServiceMock.last(any(), any())).thenReturn(
+                TimeSeriesPoint.builder()
+                        .timestamp(expectedDate)
+                        .measurement("x", 2)
+                        .category("x", "y")
+                        .build()
+        );
+
+        ResultActions result = mockMvc.perform(
+                get("/{owner}/{seriesName}/minutes/last", anOwner(), timeSeries)
+                        .param("from", from)
+                        .param("to", to)
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+        assertNormalResponse(result);
+        String stringResult = result.andReturn().getResponse().getContentAsString();
+        String timestampResult = new JSONObject(stringResult).getString("timestamp");
+        ZonedDateTime responseDate = ZonedDateTime.parse(timestampResult, formatter);
+        assertEquals(expectedDate, responseDate);
     }
 
     @Test

@@ -15,8 +15,6 @@ logging:
 spring:
   jackson:
     default-property-inclusion: NON_EMPTY
-    serialization:
-      WRITE_DATES_AS_TIMESTAMPS: false
 
 # Spring Boot Actuator
 management:
