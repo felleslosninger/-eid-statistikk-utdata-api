@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -70,7 +71,8 @@ public class QueryRestControllerTest {
         final String timeSeries = "a_series";
         final String from = "2013-10-12T12:13:13.123+02:00";
         final String to = "2013-10-12T13:13:13.123+02:00";
-        final ZonedDateTime expectedDate = ZonedDateTime.of(2022, 8, 15, 12, 0, 0, 0, ZoneId.systemDefault());
+        final ZonedDateTime expectedDate = ZonedDateTime.of(2022, 8, 15, 12,
+                0, 0, 0, ZoneOffset.ofHours(2));
         final DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
         when(queryServiceMock.last(any(), any())).thenReturn(
