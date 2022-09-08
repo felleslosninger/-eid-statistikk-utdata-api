@@ -1,12 +1,11 @@
 package no.difi.statistics.elasticsearch;
 
-import no.difi.statistics.model.MeasurementDistance;
-import no.difi.statistics.model.TimeSeriesDefinition;
-import no.difi.statistics.model.TimeSeriesPoint;
-import no.difi.statistics.model.PercentileFilter;
-import no.difi.statistics.model.QueryFilter;
 import no.difi.statistics.QueryService;
+import no.difi.statistics.model.*;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class ElasticsearchQueryService implements QueryService {
@@ -20,6 +19,11 @@ public class ElasticsearchQueryService implements QueryService {
     @Override
     public List<TimeSeriesDefinition> availableTimeSeries() {
         return commandFactory.availableTimeSeries().build().execute();
+    }
+
+    @Override
+    public HashMap<IndexName, HashSet<String>> categories() throws IOException {
+        return commandFactory.categories().build().execute();
     }
 
     @Override

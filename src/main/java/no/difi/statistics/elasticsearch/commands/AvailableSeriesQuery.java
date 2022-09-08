@@ -28,7 +28,7 @@ public class AvailableSeriesQuery {
         List<String> indices = new ArrayList<>();
         Request request = new Request("GET", "/_cat/indices?h=index");
         try (InputStream response = elasticSearchClient.performRequest(request).getEntity().getContent();
-             Scanner scanner = new Scanner(response)) {
+            Scanner scanner = new Scanner(response)) {
             scanner.forEachRemaining(indices::add);
         } catch (IOException e) {
             throw new RuntimeException("Failed to list available time series", e);

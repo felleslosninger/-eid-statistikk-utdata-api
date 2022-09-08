@@ -1,13 +1,17 @@
 package no.difi.statistics;
 
 import no.difi.statistics.model.*;
-import no.difi.statistics.model.QueryFilter;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public interface QueryService {
 
     List<TimeSeriesDefinition> availableTimeSeries();
+
+    HashMap<IndexName, HashSet<String>> categories() throws IOException;
 
     TimeSeriesPoint last(TimeSeriesDefinition seriesDefinition, QueryFilter queryFilter);
 

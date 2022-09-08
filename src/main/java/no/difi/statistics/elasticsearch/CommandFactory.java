@@ -46,4 +46,8 @@ public class CommandFactory implements ApplicationContextAware {
         return applicationContext.getBean(AvailableSeriesQuery.Builder.class);
     }
 
+    public CategoriesQuery.Builder categories() {
+        return applicationContext.getBean(CategoriesQuery.Builder.class);
+    }
+
 }

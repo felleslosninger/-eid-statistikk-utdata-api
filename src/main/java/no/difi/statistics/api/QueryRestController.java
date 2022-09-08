@@ -12,7 +12,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -47,6 +50,12 @@ public class QueryRestController {
     @GetMapping("/meta")
     public List<TimeSeriesDefinition> available() {
         return service.availableTimeSeries();
+    }
+
+    @Operation(summary = "Hent ut liste over tilgjengelege kategorier")
+    @GetMapping("/categories")
+    public HashMap<IndexName, HashSet<String>> categories() throws IOException {
+        return service.categories();
     }
 
     @Operation(summary = "Hent data frå ein tidsserie")

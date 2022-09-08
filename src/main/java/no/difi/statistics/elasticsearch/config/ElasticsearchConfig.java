@@ -62,6 +62,12 @@ public class ElasticsearchConfig implements BackendConfig {
 
     @Bean
     @Scope("prototype")
+    public CategoriesQuery.Builder listCategoriesCommandBuilder() {
+        return CategoriesQuery.builder().elasticsearchClient(elasticsearchHighLevelClient());
+    }
+
+    @Bean
+    @Scope("prototype")
     public LastHistogramQuery.Builder lastHistogramCommandBuilder() {
         return LastHistogramQuery.builder().elasticsearchClient(elasticsearchHighLevelClient());
     }
