@@ -28,7 +28,9 @@ public class CategoriesQuery {
     private CategoriesQuery() { }
 
     // Get a cursor to scroll through the results, set a size for each batch. And a timeout of 1 minute.
-    public HashMap<IndexName, HashSet<String>> execute() throws IOException {
+    // Example of an index-name: 991825827@idporten-innlogging@hour2022
+    public HashSet<IndexName> execute() throws IOException {
+        HashSet<IndexName> timeSeries = new HashSet<>();
         HashSet<String> categories = new HashSet<>();
         HashMap<IndexName, HashSet<String>> indexNames = new HashMap<>();
 
@@ -74,7 +76,14 @@ public class CategoriesQuery {
             }
         }
 
-        return indexNames;
+        indexNames.forEach((key, value) -> {
+            logger.info("key: {}, value: {}", key, value);
+            IndexName indexName = new IndexName(key.getOwner(), key.getName(), key.getDistance());
+            indexName.setCategories(value);
+            timeSeries.add(indexName);
+        });
+
+        return timeSeries;
     }
 
     public static Builder builder() {

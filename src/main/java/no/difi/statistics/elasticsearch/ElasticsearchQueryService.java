@@ -4,7 +4,6 @@ import no.difi.statistics.QueryService;
 import no.difi.statistics.model.*;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -22,7 +21,7 @@ public class ElasticsearchQueryService implements QueryService {
     }
 
     @Override
-    public HashMap<IndexName, HashSet<String>> categories() throws IOException {
+    public HashSet<IndexName> categories() throws IOException {
         return commandFactory.categories().build().execute();
     }
 

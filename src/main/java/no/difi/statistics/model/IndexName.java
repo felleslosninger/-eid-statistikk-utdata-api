@@ -1,5 +1,6 @@
 package no.difi.statistics.model;
 
+import java.util.HashSet;
 import java.util.Objects;
 
 public class IndexName {
@@ -7,6 +8,15 @@ public class IndexName {
     private String owner;
     private String name;
     private String distance;
+    private HashSet<String> categories;
+
+    public HashSet<String> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(HashSet<String> categories) {
+        this.categories = categories;
+    }
 
     public IndexName(String owner, String name, String distance) {
         this.owner = owner;
