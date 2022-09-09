@@ -2,8 +2,7 @@ package no.difi.statistics.elasticsearch.commands;
 
 import no.difi.statistics.model.IndexName;
 import org.apache.lucene.search.TotalHits;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.*;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.core.TimeValue;
@@ -96,28 +95,41 @@ public class CategoriesQuery {
         logger.info("total hits: {}", totalHits);
 
         SearchHit[] searchHits = hits.getHits();
-        for (SearchHit hit : searchHits) {
-            String[] index = hit.getIndex().split("@", 3);
-            if (index.length == 3) {
-                logger.info("index: {}", hit.getIndex());
-                IndexName indexName = new IndexName(index[0],index[1],index[2]);
-                if (indexNames.containsKey(indexName)) {
-                    categories = indexNames.get(indexName);
-                } else {
-                    indexNames.put(indexName, new HashSet<String>());
-                }
+        while (searchHits != null && searchHits.length > 0) {
+            for (SearchHit hit : searchHits) {
+                String[] index = hit.getIndex().split("@", 3);
+                if (index.length == 3) {
+                    logger.info("index: {}", hit.getIndex());
+                    IndexName indexName = new IndexName(index[0],index[1],index[2]);
+                    if (indexNames.containsKey(indexName)) {
+                        categories = indexNames.get(indexName);
+                    } else {
+                        indexNames.put(indexName, new HashSet<String>());
+                    }
 
-                //logger.info("hit: {}", hit);
-                Map<String, Object> sourceAsMap = hit.getSourceAsMap();
-                for (Object key : sourceAsMap.keySet()) {
-                    if (key.toString().startsWith("category.")) {
-                        String category[] = key.toString().split(splitValue);
-                        logger.info("key: {}, split: {}", key, category[1]);
-                        categories.add(category[1]);
+                    //logger.info("hit: {}", hit);
+                    Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+                    for (Object key : sourceAsMap.keySet()) {
+                        if (key.toString().startsWith("category.")) {
+                            String category[] = key.toString().split(splitValue);
+                            logger.info("key: {}, split: {}", key, category[1]);
+                            categories.add(category[1]);
+                        }
                     }
                 }
             }
+
+            SearchScrollRequest scrollRequest = new SearchScrollRequest(scrollId);
+            scrollRequest.scroll(scroll);
+            searchResponse = elasticSearchClient.scroll(scrollRequest, RequestOptions.DEFAULT);
+            scrollId = searchResponse.getScrollId();
+            searchHits = searchResponse.getHits().getHits();
         }
+
+        ClearScrollRequest clearScrollRequest = new ClearScrollRequest();
+        clearScrollRequest.addScrollId(scrollId);
+        ClearScrollResponse clearScrollResponse = elasticSearchClient.clearScroll(clearScrollRequest, RequestOptions.DEFAULT);
+        boolean succeeded = clearScrollResponse.isSucceeded();
 
         indexNames.forEach((key, value) -> {
             logger.info("key: {}, value: {}", key, value);
