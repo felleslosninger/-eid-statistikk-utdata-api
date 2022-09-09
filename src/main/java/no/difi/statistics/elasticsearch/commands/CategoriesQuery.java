@@ -95,6 +95,7 @@ public class CategoriesQuery {
         while (searchHits != null && searchHits.length > 0) {
             for (SearchHit hit : searchHits) {
                 HashSet<String> categories = new HashSet<>();
+                // 991825827@idporten-innlogging@hour2022
                 String[] index = hit.getIndex().split("@", 3);
                 if (index.length == 3) {
                     IndexName indexName = new IndexName(index[0],index[1],index[2]);
@@ -104,7 +105,6 @@ public class CategoriesQuery {
                         indexNames.put(indexName, new HashSet<>());
                     }
 
-                    //logger.info("hit: {}", hit);
                     Map<String, Object> sourceAsMap = hit.getSourceAsMap();
                     for (Object key : sourceAsMap.keySet()) {
                         if (key.toString().startsWith("category.")) {
