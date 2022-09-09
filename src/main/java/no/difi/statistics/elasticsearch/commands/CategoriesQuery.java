@@ -104,14 +104,14 @@ public class CategoriesQuery {
                     if (indexNames.containsKey(indexName)) {
                         categories = indexNames.get(indexName);
                     } else {
-                        indexNames.put(indexName, new HashSet<String>());
+                        indexNames.put(indexName, new HashSet<>());
                     }
 
                     //logger.info("hit: {}", hit);
                     Map<String, Object> sourceAsMap = hit.getSourceAsMap();
                     for (Object key : sourceAsMap.keySet()) {
                         if (key.toString().startsWith("category.")) {
-                            String category[] = key.toString().split(splitValue);
+                            String[] category = key.toString().split(splitValue);
                             logger.info("key: {}, split: {}", key, category[1]);
                             categories.add(category[1]);
                         }
@@ -130,6 +130,7 @@ public class CategoriesQuery {
         clearScrollRequest.addScrollId(scrollId);
         ClearScrollResponse clearScrollResponse = elasticSearchClient.clearScroll(clearScrollRequest, RequestOptions.DEFAULT);
         boolean succeeded = clearScrollResponse.isSucceeded();
+        logger.info("succeeded: {}", succeeded);
 
         indexNames.forEach((key, value) -> {
             logger.info("key: {}, value: {}", key, value);
@@ -147,7 +148,7 @@ public class CategoriesQuery {
 
     public static class Builder {
 
-        private CategoriesQuery instance = new CategoriesQuery();
+        private final CategoriesQuery instance = new CategoriesQuery();
 
         public Builder elasticsearchClient(RestHighLevelClient client) {
             instance.elasticSearchClient = client;
