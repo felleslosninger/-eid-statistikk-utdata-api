@@ -8,6 +8,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.core.TimeValue;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.Scroll;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -27,23 +28,65 @@ public class CategoriesQuery {
 
     private CategoriesQuery() { }
 
-    // Get a cursor to scroll through the results, set a size for each batch. And a timeout of 1 minute.
-    // Example of an index-name: 991825827@idporten-innlogging@hour2022
     public HashSet<IndexName> execute() throws IOException {
         HashSet<IndexName> timeSeries = new HashSet<>();
         HashSet<String> categories = new HashSet<>();
         HashMap<IndexName, HashSet<String>> indexNames = new HashMap<>();
 
+        // Interested in lines like "category.TE-orgnum" : "983971636".
         String splitValue = "category\\.";
-        // Year 2022 is currently hardcoded.
+        // Example of an index-name: 991825827@idporten-innlogging@hour2022
+        /*
+         TODO
+         Year is currently hardcoded.
+        */
         String searchTerm = "*@*@hour*2022";
 
+        /*
+        Put into a HashMap and use index as key, categories into a HashSet as value.
+        When done merge key and value into a HashSet, so we can display in a proper json-format.
+
+        From
+
+        {
+        "_index" : "991825827@idporten-innlogging@hour2022",
+        "_source" : {
+          "category.TE" : "Akershus universitetssykehus hf",
+          "category.TL-entityId" : "idfed.ad.ahus.no",
+          "category.TE-orgnum" : "983971636",
+          "category.TL-orgnum" : "983971636",
+          "category.TE-entityId" : "idfed.ad.ahus.no",
+          "category.TL" : "Akershus universitetssykehus hf"
+        }
+
+        to
+
+        {
+            "owner": "991825827",
+            "name": "idporten-innlogging",
+            "distance": "hour2022",
+            "categories": [
+                "TE-orgnum",
+                "TL-orgnum",
+                "TE",
+                "TL-entityId",
+                "TE-entityId",
+                "TL"
+            ]
+        }
+
+         */
+
+        // Get a cursor to scroll through the results, set a size for each batch. And a timeout of 1 minute.
+        // https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high-search-scroll.html
+        final Scroll scroll = new Scroll(TimeValue.timeValueMinutes(1L));
         SearchRequest searchRequest = new SearchRequest(searchTerm);
+        searchRequest.scroll(scroll);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(QueryBuilders.matchAllQuery());
         searchSourceBuilder.size(10000);
         searchRequest.source(searchSourceBuilder);
-        searchRequest.scroll(TimeValue.timeValueMinutes(1L));
+
         SearchResponse searchResponse = elasticSearchClient.search(searchRequest, RequestOptions.DEFAULT);
         String scrollId = searchResponse.getScrollId();
         SearchHits hits = searchResponse.getHits();
