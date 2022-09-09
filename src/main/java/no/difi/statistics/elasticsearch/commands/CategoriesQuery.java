@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -29,17 +30,14 @@ public class CategoriesQuery {
 
     public HashSet<IndexName> execute() throws IOException {
         HashSet<IndexName> timeSeries = new HashSet<>();
-        HashSet<String> categories = new HashSet<>();
         HashMap<IndexName, HashSet<String>> indexNames = new HashMap<>();
 
         // Interested in lines like "category.TE-orgnum" : "983971636".
         String splitValue = "category\\.";
+
         // Example of an index-name: 991825827@idporten-innlogging@hour2022
-        /*
-         TODO
-         Year is currently hardcoded.
-        */
-        String searchTerm = "*@*@hour*2022";
+        LocalDate localDate = LocalDate.now();
+        String searchTerm = "*@*@hour" + localDate.getYear();
 
         /*
         Put into a HashMap and use index as key, categories into a HashSet as value.
@@ -91,15 +89,14 @@ public class CategoriesQuery {
         SearchHits hits = searchResponse.getHits();
         TotalHits totalHits = hits.getTotalHits();
 
-        logger.info("scroll-id: {}", scrollId);
         logger.info("total hits: {}", totalHits);
 
         SearchHit[] searchHits = hits.getHits();
         while (searchHits != null && searchHits.length > 0) {
             for (SearchHit hit : searchHits) {
+                HashSet<String> categories = new HashSet<>();
                 String[] index = hit.getIndex().split("@", 3);
                 if (index.length == 3) {
-                    logger.info("index: {}", hit.getIndex());
                     IndexName indexName = new IndexName(index[0],index[1],index[2]);
                     if (indexNames.containsKey(indexName)) {
                         categories = indexNames.get(indexName);
@@ -112,7 +109,6 @@ public class CategoriesQuery {
                     for (Object key : sourceAsMap.keySet()) {
                         if (key.toString().startsWith("category.")) {
                             String[] category = key.toString().split(splitValue);
-                            logger.info("key: {}, split: {}", key, category[1]);
                             categories.add(category[1]);
                         }
                     }
@@ -133,7 +129,6 @@ public class CategoriesQuery {
         logger.info("succeeded: {}", succeeded);
 
         indexNames.forEach((key, value) -> {
-            logger.info("key: {}, value: {}", key, value);
             IndexName indexName = new IndexName(key.getOwner(), key.getName(), key.getDistance());
             indexName.setCategories(value);
             timeSeries.add(indexName);
