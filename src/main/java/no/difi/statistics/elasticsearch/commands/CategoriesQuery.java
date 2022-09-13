@@ -15,10 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CategoriesQuery {
 
@@ -36,8 +37,11 @@ public class CategoriesQuery {
         String splitValue = "category\\.";
 
         // Example of an index-name: 991825827@idporten-innlogging@hour2022
-        LocalDate localDate = LocalDate.now();
-        String searchTerm = "*@*@hour" + localDate.getYear();
+        String searchTerm = "*@*@*";
+
+        // Search for year (and remove it).
+        String pattern = "\\d{4}$";
+        Pattern r = Pattern.compile(pattern);
 
         /*
         Put into a HashMap and use index as key, categories into a HashSet as value.
@@ -98,10 +102,23 @@ public class CategoriesQuery {
                 // 991825827@idporten-innlogging@hour2022
                 String[] index = hit.getIndex().split("@", 3);
                 if (index.length == 3) {
-                    IndexName indexName = new IndexName(index[0],index[1],index[2]);
+                    Matcher matcher = r.matcher(index[2]);
+                    String distance = "hour";
+                    if (matcher.find()) {
+                        distance = index[2].substring(0, matcher.start());
+                    }
+
+                    if ("hour".equals(distance)) {
+                        distance = "hours";
+                    } else {
+                        distance = "minutes";
+                    }
+
+                    IndexName indexName = new IndexName(index[0], index[1], distance);
                     if (indexNames.containsKey(indexName)) {
                         categories = indexNames.get(indexName);
                     } else {
+                        // This else is needed if there is a timeseries without categories. We want to display them as well.
                         indexNames.put(indexName, new HashSet<>());
                     }
 
@@ -110,6 +127,7 @@ public class CategoriesQuery {
                         if (key.toString().startsWith("category.")) {
                             String[] category = key.toString().split(splitValue);
                             categories.add(category[1]);
+                            indexNames.put(indexName, categories);
                         }
                     }
                 }
