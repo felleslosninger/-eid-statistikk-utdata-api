@@ -1,159 +1,93 @@
 package no.difi.statistics.elasticsearch.commands;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import no.difi.statistics.model.IndexName;
-import org.apache.lucene.search.TotalHits;
-import org.elasticsearch.action.search.*;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.core.TimeValue;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.Scroll;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.apache.http.util.EntityUtils;
+import org.elasticsearch.client.Request;
+import org.elasticsearch.client.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class CategoriesQuery {
 
-    private RestHighLevelClient elasticSearchClient;
+    private RestClient elasticSearchClient;
 
     private static final Logger logger = LoggerFactory.getLogger(CategoriesQuery.class);
 
     private CategoriesQuery() { }
 
     public Set<IndexName> execute() throws IOException {
-        Map<IndexName, Set<String>> indexNames = new HashMap<>();
+        // Put index-name and categories in map, and copy to set before returning.
+        Map<IndexName, Set<String>> indexNameMap = new HashMap<>();
 
-        // Interested in lines like "category.TE-orgnum" : "983971636".
-        String splitValue = "category\\.";
-
-        // Example of an index-name: 991825827@idporten-innlogging@hour2022
-        String searchTerm = "*@*@*";
-
-        // Search for year (and remove it).
+        // Search for year in index-name (to remove it).
         String pattern = "\\d{4}$";
         Pattern r = Pattern.compile(pattern);
 
-        /*
-        Put into a HashMap and use index as key, categories into a HashSet as value.
-        When done merge key and value into a HashSet, so we can display in a proper json-format.
+        // Example of an index-name: 991825827@idporten-innlogging@hour2022
+        Request request = new Request("GET", "/*@*@*/_mapping");
+        String mappings = EntityUtils.toString(elasticSearchClient.performRequest(request).getEntity());
+        //logger.info("mapper:\n{}", mappings);
 
-        From
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonNode = mapper.readTree(mappings);
+        Iterator<String> index = jsonNode.fieldNames();
+        for (JsonNode indexObject : jsonNode) {
+            Set<String> categorySet = new HashSet<>();
 
-        {
-        "_index" : "991825827@idporten-innlogging@hour2022",
-        "_source" : {
-          "category.TE" : "Akershus universitetssykehus hf",
-          "category.TL-entityId" : "idfed.ad.ahus.no",
-          "category.TE-orgnum" : "983971636",
-          "category.TL-orgnum" : "983971636",
-          "category.TE-entityId" : "idfed.ad.ahus.no",
-          "category.TL" : "Akershus universitetssykehus hf"
-        }
+            // Name of index
+            String[] name = index.next().split("@", 3);
+            Matcher matcher = r.matcher(name[2]);
 
-        to
+            String distance = "hour";
+            if (matcher.find()) {
+                distance = name[2].substring(0, matcher.start());
+            }
 
-        {
-            "owner": "991825827",
-            "name": "idporten-innlogging",
-            "distance": "hour2022",
-            "categories": [
-                "TE-orgnum",
-                "TL-orgnum",
-                "TE",
-                "TL-entityId",
-                "TE-entityId",
-                "TL"
-            ]
-        }
+            if ("hour".equals(distance)) {
+                distance = "hours";
+            } else {
+                distance = "minutes";
+            }
 
-         */
+            IndexName indexName = new IndexName(name[0], name[1], distance);
 
-        // Get a cursor to scroll through the results, set a size for each batch. And a timeout of 1 minute.
-        // https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high-search-scroll.html
-        final Scroll scroll = new Scroll(TimeValue.timeValueMinutes(1L));
-        SearchRequest searchRequest = new SearchRequest(searchTerm);
-        searchRequest.scroll(scroll);
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.query(QueryBuilders.matchAllQuery());
-        searchSourceBuilder.size(10000);
-        searchRequest.source(searchSourceBuilder);
+            if (indexNameMap.containsKey(indexName)) {
+                categorySet = indexNameMap.get(indexName);
+            } else {
+                indexNameMap.put(indexName, categorySet);
+            }
 
-        SearchResponse searchResponse = elasticSearchClient.search(searchRequest, RequestOptions.DEFAULT);
-        String scrollId = searchResponse.getScrollId();
-        SearchHits hits = searchResponse.getHits();
-        TotalHits totalHits = hits.getTotalHits();
-
-        logger.info("total hits: {}", totalHits);
-
-        SearchHit[] searchHits = hits.getHits();
-        while (searchHits != null && searchHits.length > 0) {
-            for (SearchHit hit : searchHits) {
-                Set<String> categories = new HashSet<>();
-                // 991825827@idporten-innlogging@hour2022
-                String[] index = hit.getIndex().split("@", 3);
-                if (index.length == 3) {
-                    Matcher matcher = r.matcher(index[2]);
-                    String distance = "hour";
-                    if (matcher.find()) {
-                        distance = index[2].substring(0, matcher.start());
-                    }
-
-                    if ("hour".equals(distance)) {
-                        distance = "hours";
-                    } else {
-                        distance = "minutes";
-                    }
-
-                    IndexName indexName = new IndexName(index[0], index[1], distance);
-                    if (indexNames.containsKey(indexName)) {
-                        categories = indexNames.get(indexName);
-                    } else {
-                        // This else is needed if there is a timeseries without categories. We want to display them as well.
-                        indexNames.put(indexName, categories);
-                    }
-
-                    Map<String, Object> sourceAsMap = hit.getSourceAsMap();
-                    for (Object key : sourceAsMap.keySet()) {
-                        if (key.toString().startsWith("category.")) {
-                            String[] category = key.toString().split(splitValue);
-                            categories.add(category[1]);
-                            indexNames.put(indexName, categories);
-                        }
+            JsonNode properties = indexObject.get("mappings").get("properties").get("category");
+            //logger.info("parent: {}, indexObject: {}", name, properties);
+            if (properties != null) {
+                for (JsonNode categories : properties) {
+                    Iterator<String> category = categories.fieldNames();
+                    while (category.hasNext()) {
+                        String c = category.next();
+                        categorySet.add(c);
+                        //logger.info("index-name: {}, category: {}", name, c);
                     }
                 }
             }
-
-            SearchScrollRequest scrollRequest = new SearchScrollRequest(scrollId);
-            scrollRequest.scroll(scroll);
-            searchResponse = elasticSearchClient.scroll(scrollRequest, RequestOptions.DEFAULT);
-            scrollId = searchResponse.getScrollId();
-            searchHits = searchResponse.getHits().getHits();
+            indexNameMap.put(indexName, categorySet);
         }
 
-        ClearScrollRequest clearScrollRequest = new ClearScrollRequest();
-        clearScrollRequest.addScrollId(scrollId);
-        ClearScrollResponse clearScrollResponse = elasticSearchClient.clearScroll(clearScrollRequest, RequestOptions.DEFAULT);
-        boolean succeeded = clearScrollResponse.isSucceeded();
-        logger.info("succeeded: {}", succeeded);
-
-        return indexNames.entrySet().stream()
+        return indexNameMap.entrySet().stream()
                 .map(entry -> {
-                    IndexName indexName = new IndexName(entry.getKey().getOwner(), entry.getKey().getName(), entry.getKey().getDistance());
-                    indexName.setCategories(entry.getValue());
-                    return indexName;
+                        IndexName indexName = new IndexName(entry.getKey().getOwner(), entry.getKey().getName(), entry.getKey().getDistance());
+                        indexName.setCategories(entry.getValue());
+                        return indexName;
                 })
                 .collect(Collectors.toSet());
+
     }
 
     public static Builder builder() {
@@ -164,7 +98,7 @@ public class CategoriesQuery {
 
         private final CategoriesQuery instance = new CategoriesQuery();
 
-        public Builder elasticsearchClient(RestHighLevelClient client) {
+        public Builder elasticsearchClient(RestClient client) {
             instance.elasticSearchClient = client;
             return this;
         }
