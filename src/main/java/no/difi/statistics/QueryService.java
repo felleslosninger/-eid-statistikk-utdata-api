@@ -3,14 +3,14 @@ package no.difi.statistics;
 import no.difi.statistics.model.*;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public interface QueryService {
 
     List<TimeSeriesDefinition> availableTimeSeries();
 
-    HashSet<IndexName> categories() throws IOException;
+    Set<IndexName> categories() throws IOException;
 
     TimeSeriesPoint last(TimeSeriesDefinition seriesDefinition, QueryFilter queryFilter);
 

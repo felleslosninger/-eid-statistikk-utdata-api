@@ -1,20 +1,20 @@
 package no.difi.statistics.model;
 
-import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class IndexName {
 
     private String owner;
     private String name;
     private String distance;
-    private HashSet<String> categories;
+    private Set<String> categories;
 
-    public HashSet<String> getCategories() {
+    public Set<String> getCategories() {
         return categories;
     }
 
-    public void setCategories(HashSet<String> categories) {
+    public void setCategories(Set<String> categories) {
         this.categories = categories;
     }
 

@@ -18,8 +18,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class CategoriesQuery {
 
@@ -29,9 +31,8 @@ public class CategoriesQuery {
 
     private CategoriesQuery() { }
 
-    public HashSet<IndexName> execute() throws IOException {
-        HashSet<IndexName> timeSeries = new HashSet<>();
-        HashMap<IndexName, HashSet<String>> indexNames = new HashMap<>();
+    public Set<IndexName> execute() throws IOException {
+        Map<IndexName, Set<String>> indexNames = new HashMap<>();
 
         // Interested in lines like "category.TE-orgnum" : "983971636".
         String splitValue = "category\\.";
@@ -98,7 +99,7 @@ public class CategoriesQuery {
         SearchHit[] searchHits = hits.getHits();
         while (searchHits != null && searchHits.length > 0) {
             for (SearchHit hit : searchHits) {
-                HashSet<String> categories = new HashSet<>();
+                Set<String> categories = new HashSet<>();
                 // 991825827@idporten-innlogging@hour2022
                 String[] index = hit.getIndex().split("@", 3);
                 if (index.length == 3) {
@@ -119,7 +120,7 @@ public class CategoriesQuery {
                         categories = indexNames.get(indexName);
                     } else {
                         // This else is needed if there is a timeseries without categories. We want to display them as well.
-                        indexNames.put(indexName, new HashSet<>());
+                        indexNames.put(indexName, categories);
                     }
 
                     Map<String, Object> sourceAsMap = hit.getSourceAsMap();
@@ -146,13 +147,13 @@ public class CategoriesQuery {
         boolean succeeded = clearScrollResponse.isSucceeded();
         logger.info("succeeded: {}", succeeded);
 
-        indexNames.forEach((key, value) -> {
-            IndexName indexName = new IndexName(key.getOwner(), key.getName(), key.getDistance());
-            indexName.setCategories(value);
-            timeSeries.add(indexName);
-        });
-
-        return timeSeries;
+        return indexNames.entrySet().stream()
+                .map(entry -> {
+                    IndexName indexName = new IndexName(entry.getKey().getOwner(), entry.getKey().getName(), entry.getKey().getDistance());
+                    indexName.setCategories(entry.getValue());
+                    return indexName;
+                })
+                .collect(Collectors.toSet());
     }
 
     public static Builder builder() {

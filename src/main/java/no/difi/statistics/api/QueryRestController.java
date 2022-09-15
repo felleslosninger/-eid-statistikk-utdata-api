@@ -14,8 +14,8 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static java.lang.String.format;
 import static no.difi.statistics.model.QueryFilter.queryFilter;
@@ -53,7 +53,7 @@ public class QueryRestController {
 
     @Operation(summary = "Hent ut liste over tilgjengelege kategorier")
     @GetMapping("/categories")
-    public HashSet<IndexName> categories() throws IOException {
+    public Set<IndexName> categories() throws IOException {
         return service.categories();
     }
 
