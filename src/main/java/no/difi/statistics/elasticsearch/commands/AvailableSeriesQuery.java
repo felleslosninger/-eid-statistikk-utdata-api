@@ -63,7 +63,7 @@ public class AvailableSeriesQuery {
 
     public static class Builder {
 
-        private AvailableSeriesQuery instance = new AvailableSeriesQuery();
+        private final AvailableSeriesQuery instance = new AvailableSeriesQuery();
 
         public Builder elasticsearchClient(RestClient client) {
             instance.elasticSearchClient = client;

@@ -24,7 +24,7 @@ import static no.difi.statistics.model.QueryFilter.queryFilter;
 @RestController
 public class QueryRestController {
 
-    private QueryService service;
+    private final QueryService service;
 
     public QueryRestController(QueryService service) {
         this.service = service;
@@ -111,7 +111,7 @@ public class QueryRestController {
         return service.lastHistogram(seriesDefinition, targetDistance, queryFilter().range(from, to).categories(categories).build());
     }
 
-    @Operation(summary = "Hent eitt datapunkt med sum av målingar",
+    @Operation(summary = "Hent eit datapunkt med sum av målingar",
         description = "Returnerer eitt datapunkt")
     @GetMapping("{owner}/{seriesName}/{distance}/sum")
     public TimeSeriesPoint sum(

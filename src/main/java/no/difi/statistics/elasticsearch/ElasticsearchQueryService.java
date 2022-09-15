@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class ElasticsearchQueryService implements QueryService {
 
-    private CommandFactory commandFactory;
+    private final CommandFactory commandFactory;
 
     public ElasticsearchQueryService(CommandFactory commandFactory) {
         this.commandFactory = commandFactory;
