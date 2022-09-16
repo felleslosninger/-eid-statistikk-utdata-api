@@ -5,9 +5,9 @@ import java.util.Set;
 
 public class IndexName {
 
-    private String owner;
-    private String name;
-    private String distance;
+    private final String owner;
+    private final String name;
+    private final String distance;
     private Set<String> categories;
 
     public Set<String> getCategories() {
