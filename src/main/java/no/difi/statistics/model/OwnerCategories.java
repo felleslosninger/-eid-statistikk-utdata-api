@@ -1,27 +1,25 @@
 package no.difi.statistics.model;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class IndexName {
+public class OwnerCategories {
 
     private final String owner;
     private final String name;
     private final String distance;
-    private Set<String> categories;
+    private final Set<String> categories;
 
     public Set<String> getCategories() {
         return categories;
     }
 
-    public void setCategories(Set<String> categories) {
-        this.categories = categories;
-    }
-
-    public IndexName(String owner, String name, String distance) {
+    public OwnerCategories(String owner, String name, String distance) {
         this.owner = owner;
         this.name = name;
         this.distance = distance;
+        this.categories = new HashSet<>();
     }
 
     public String getOwner() {
@@ -55,7 +53,7 @@ public class IndexName {
             return false;
         }
 
-        IndexName other = (IndexName) obj;
+        OwnerCategories other = (OwnerCategories) obj;
         return Objects.equals(owner, other.owner) &&
                         Objects.equals(name, other.name) &&
                         Objects.equals(distance, other.distance);

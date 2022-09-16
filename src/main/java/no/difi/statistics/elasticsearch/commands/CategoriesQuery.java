@@ -2,12 +2,10 @@ package no.difi.statistics.elasticsearch.commands;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import no.difi.statistics.model.IndexName;
+import no.difi.statistics.model.OwnerCategories;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.RestClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
@@ -23,24 +21,17 @@ public class CategoriesQuery {
 
     private CategoriesQuery() { }
 
-    public Set<IndexName> execute() throws IOException {
+    public Set<OwnerCategories> execute() throws IOException {
         // Put index-name and categories in Map, and copy to a Set before returning.
-        Map<IndexName, Set<String>> indexNameMap = new HashMap<>();
-
-        // Search for year in index-name (to remove it).
-        String pattern = "\\d{4}$";
-        Pattern r = Pattern.compile(pattern);
+        Map<String, OwnerCategories> ownerCategoriesMap = new HashMap<>();
 
         Request request = new Request("GET", "/*@*@*/_mapping");
         String mappings = EntityUtils.toString(elasticSearchClient.performRequest(request).getEntity());
-        //logger.info("mapper:\n{}", mappings);
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(mappings);
         Iterator<String> index = jsonNode.fieldNames();
-        for (JsonNode indexObject : jsonNode) {
-            Set<String> categorySet = new HashSet<>();
-
+        for (JsonNode mappingsOfIndex : jsonNode) {
             // Example of an index-name: 991825827@idporten-innlogging@hour2022
             String[] name = index.next().split("@", 3);
             Matcher matcher = r.matcher(name[2]);
@@ -56,28 +47,15 @@ public class CategoriesQuery {
                 distance = "minutes";
             }
 
-            IndexName indexName = new IndexName(name[0], name[1], distance);
+            OwnerCategories ownerCategories = new OwnerCategories(owner, name, distance);
+            Set<String> uniqueCategories = getUniqueCategories(mappingsOfIndex);
+            ownerCategories.getCategories().addAll(uniqueCategories);
 
-            if (indexNameMap.containsKey(indexName)) {
-                categorySet = indexNameMap.get(indexName);
+            if (ownerCategoriesMap.containsKey(key)) {
+                ownerCategoriesMap.get(key).getCategories().addAll(ownerCategories.getCategories());
             } else {
-                indexNameMap.put(indexName, categorySet);
+                ownerCategoriesMap.put(key, ownerCategories);
             }
-
-            // We want categories.
-            JsonNode properties = indexObject.get("mappings").get("properties").get("category");
-            //logger.info("parent: {}, indexObject: {}", name, properties);
-            if (properties != null) {
-                for (JsonNode categories : properties) {
-                    Iterator<String> category = categories.fieldNames();
-                    while (category.hasNext()) {
-                        String c = category.next();
-                        categorySet.add(c);
-                        //logger.info("index-name: {}, category: {}", name, c);
-                    }
-                }
-            }
-            indexNameMap.put(indexName, categorySet);
         }
 
         return indexNameMap.entrySet().stream()

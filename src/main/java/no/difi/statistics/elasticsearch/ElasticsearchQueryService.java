@@ -21,7 +21,7 @@ public class ElasticsearchQueryService implements QueryService {
     }
 
     @Override
-    public Set<IndexName> categories() throws IOException {
+    public Set<OwnerCategories> categories() throws IOException {
         return commandFactory.categories().build().execute();
     }
 

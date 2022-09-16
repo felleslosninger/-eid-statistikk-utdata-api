@@ -10,7 +10,7 @@ public interface QueryService {
 
     List<TimeSeriesDefinition> availableTimeSeries();
 
-    Set<IndexName> categories() throws IOException;
+    Set<OwnerCategories> categories() throws IOException;
 
     TimeSeriesPoint last(TimeSeriesDefinition seriesDefinition, QueryFilter queryFilter);
 

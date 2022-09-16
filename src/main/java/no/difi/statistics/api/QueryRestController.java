@@ -53,7 +53,7 @@ public class QueryRestController {
 
     @Operation(summary = "Hent ut liste over tilgjengelege kategorier")
     @GetMapping("/categories")
-    public Set<IndexName> categories() throws IOException {
+    public Set<OwnerCategories> categories() throws IOException {
         return service.categories();
     }
 
