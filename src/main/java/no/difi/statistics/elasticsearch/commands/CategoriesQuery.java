@@ -11,15 +11,13 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class CategoriesQuery {
 
     private RestClient elasticSearchClient;
 
-    private static final Logger logger = LoggerFactory.getLogger(CategoriesQuery.class);
-
-    private CategoriesQuery() { }
+    private CategoriesQuery() {
+    }
 
     public Set<OwnerCategories> execute() throws IOException {
         // Put index-name and categories in Map, and copy to a Set before returning.
@@ -33,19 +31,11 @@ public class CategoriesQuery {
         Iterator<String> index = jsonNode.fieldNames();
         for (JsonNode mappingsOfIndex : jsonNode) {
             // Example of an index-name: 991825827@idporten-innlogging@hour2022
-            String[] name = index.next().split("@", 3);
-            Matcher matcher = r.matcher(name[2]);
-
-            String distance = "hour";
-            if (matcher.find()) {
-                distance = name[2].substring(0, matcher.start());
-            }
-
-            if ("hour".equals(distance)) {
-                distance = "hours";
-            } else {
-                distance = "minutes";
-            }
+            String[] indexNameTokens = index.next().split("@", 3);
+            String owner = indexNameTokens[0];
+            String name = indexNameTokens[1];
+            String distance = determineDistance(indexNameTokens[2]);
+            String key = owner + ":" +  name + ":" + distance;
 
             OwnerCategories ownerCategories = new OwnerCategories(owner, name, distance);
             Set<String> uniqueCategories = getUniqueCategories(mappingsOfIndex);
@@ -58,14 +48,43 @@ public class CategoriesQuery {
             }
         }
 
-        return indexNameMap.entrySet().stream()
-                .map(entry -> {
-                        IndexName indexName = new IndexName(entry.getKey().getOwner(), entry.getKey().getName(), entry.getKey().getDistance());
-                        indexName.setCategories(entry.getValue());
-                        return indexName;
-                })
-                .collect(Collectors.toSet());
+        return new HashSet<>(ownerCategoriesMap.values());
+    }
 
+    private String determineDistance(String distanceToken) {
+        // Search for year in index-name (to remove it).
+        String pattern = "\\d{4}$";
+        Pattern r = Pattern.compile(pattern);
+        Matcher matcher = r.matcher(distanceToken);
+
+        String distance = "hour";
+        if (matcher.find()) {
+            distance = distanceToken.substring(0, matcher.start());
+        }
+
+        if ("hour".equals(distance)) {
+            distance = "hours";
+        } else {
+            distance = "minutes";
+        }
+
+        return distance;
+    }
+
+    private Set<String> getUniqueCategories(JsonNode mappingsOfIndex) {
+        Set<String> uniqueCategories = new HashSet<>();
+        JsonNode properties = mappingsOfIndex.get("mappings").get("properties").get("category");
+        if (properties != null) {
+            for (JsonNode categories : properties) {
+                Iterator<String> category = categories.fieldNames();
+                while (category.hasNext()) {
+                    String categoryString = category.next();
+                    uniqueCategories.add(categoryString);
+                }
+            }
+        }
+
+        return uniqueCategories;
     }
 
     public static Builder builder() {
