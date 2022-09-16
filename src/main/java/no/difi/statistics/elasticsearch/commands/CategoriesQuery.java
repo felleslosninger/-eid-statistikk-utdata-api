@@ -24,14 +24,13 @@ public class CategoriesQuery {
     private CategoriesQuery() { }
 
     public Set<IndexName> execute() throws IOException {
-        // Put index-name and categories in map, and copy to set before returning.
+        // Put index-name and categories in Map, and copy to a Set before returning.
         Map<IndexName, Set<String>> indexNameMap = new HashMap<>();
 
         // Search for year in index-name (to remove it).
         String pattern = "\\d{4}$";
         Pattern r = Pattern.compile(pattern);
 
-        // Example of an index-name: 991825827@idporten-innlogging@hour2022
         Request request = new Request("GET", "/*@*@*/_mapping");
         String mappings = EntityUtils.toString(elasticSearchClient.performRequest(request).getEntity());
         //logger.info("mapper:\n{}", mappings);
@@ -42,7 +41,7 @@ public class CategoriesQuery {
         for (JsonNode indexObject : jsonNode) {
             Set<String> categorySet = new HashSet<>();
 
-            // Name of index
+            // Example of an index-name: 991825827@idporten-innlogging@hour2022
             String[] name = index.next().split("@", 3);
             Matcher matcher = r.matcher(name[2]);
 
@@ -65,6 +64,7 @@ public class CategoriesQuery {
                 indexNameMap.put(indexName, categorySet);
             }
 
+            // We want categories.
             JsonNode properties = indexObject.get("mappings").get("properties").get("category");
             //logger.info("parent: {}, indexObject: {}", name, properties);
             if (properties != null) {
