@@ -66,6 +66,7 @@ public class CategoriesQueryTest {
         }
 
         CategoriesQuery categoriesQuery = new CategoriesQuery();
+        assert jsonNode != null;
         Map<String, OwnerCategories> ownerCategoriesMap = categoriesQuery.traverseJsonNode(jsonNode);
 
         assertFalse(ownerCategoriesMap.containsKey("991825827:foo-bar-baz:hours"));
@@ -96,6 +97,7 @@ public class CategoriesQueryTest {
         }
 
         CategoriesQuery categoriesQuery = new CategoriesQuery();
+        assert jsonNode != null;
         Map<String, OwnerCategories> ownerCategoriesMap = categoriesQuery.traverseJsonNode(jsonNode);
 
         OwnerCategories efmtestCategories = ownerCategoriesMap.get("991825827:efmtest:hours");
@@ -127,28 +129,29 @@ public class CategoriesQueryTest {
         }
 
         CategoriesQuery categoriesQuery = new CategoriesQuery();
+        assert jsonNode != null;
         Map<String, OwnerCategories> ownerCategoriesMap = categoriesQuery.traverseJsonNode(jsonNode);
 
         OwnerCategories efmtestCategories = ownerCategoriesMap.get("991825827:efmtest:hours");
         OwnerCategories krrCategories = ownerCategoriesMap.get("991825827:kontaktregister:hours");
         OwnerCategories idportenCategories = ownerCategoriesMap.get("991825827:idporten-innlogging:hours");
 
-        Set<String> testSet = null;
+        Set<String> testSet;
 
         testSet = Set.of("a", "b", "c");
-        assertFalse(efmtestCategories.getCategories().equals(testSet));
+        assertNotEquals(efmtestCategories.getCategories(), testSet);
 
         testSet = Set.of("service_identifier", "document_identifier", "process_identifier", "orgnr", "status");
-        assertTrue(efmtestCategories.getCategories().equals(testSet));
+        assertEquals(efmtestCategories.getCategories(), testSet);
 
         testSet = Set.of("a", "b", "c");
-        assertFalse(krrCategories.getCategories().equals(testSet));
+        assertNotEquals(krrCategories.getCategories(), testSet);
 
         testSet = Set.of();
-        assertTrue(krrCategories.getCategories().equals(testSet));
+        assertEquals(krrCategories.getCategories(), testSet);
 
         testSet = Set.of("d", "e", "f");
-        assertFalse(idportenCategories.getCategories().equals(testSet));
+        assertNotEquals(idportenCategories.getCategories(), testSet);
 
         testSet = Set.of("TE-orgnum",
                 "TL-orgnum",
@@ -159,6 +162,6 @@ public class CategoriesQueryTest {
                 "Kategori 2/3",
                 "Kategori 3/3",
                 "Kategori 1/3");
-        assertTrue(idportenCategories.getCategories().equals(testSet));
+        assertEquals(idportenCategories.getCategories(), testSet);
     }
 }

@@ -27,7 +27,6 @@ public class CategoriesQuery {
 
     public Set<OwnerCategories> execute() throws IOException {
         // Put index-name and categories in Map, and copy to a Set before returning.
-        Map<String, OwnerCategories> ownerCategoriesMap = new HashMap<>();
 
         Request request = new Request("GET", "/*@*@*/_mapping");
         String mappings = EntityUtils.toString(elasticSearchClient.performRequest(request).getEntity());
