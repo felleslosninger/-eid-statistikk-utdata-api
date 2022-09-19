@@ -16,7 +16,13 @@ public class CategoriesQuery {
 
     private RestClient elasticSearchClient;
 
-    private CategoriesQuery() {
+    // Search for year in index-name (to remove it).
+    private static final String yearRegex = "\\d{4}$";
+    private static final Pattern yearPattern = Pattern.compile(yearRegex);
+
+    private static final ObjectMapper mapper = new ObjectMapper();
+
+    public CategoriesQuery() {
     }
 
     public Set<OwnerCategories> execute() throws IOException {
@@ -26,9 +32,16 @@ public class CategoriesQuery {
         Request request = new Request("GET", "/*@*@*/_mapping");
         String mappings = EntityUtils.toString(elasticSearchClient.performRequest(request).getEntity());
 
-        ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(mappings);
+
+        return new HashSet<>(traverseJsonNode(jsonNode).values());
+    }
+
+    public Map<String, OwnerCategories> traverseJsonNode(JsonNode jsonNode) {
+        // Put index-name and categories in Map, and copy to a Set before returning.
+        Map<String, OwnerCategories> ownerCategoriesMap = new HashMap<>();
         Iterator<String> index = jsonNode.fieldNames();
+
         for (JsonNode mappingsOfIndex : jsonNode) {
             // Example of an index-name: 991825827@idporten-innlogging@hour2022
             String[] indexNameTokens = index.next().split("@", 3);
@@ -48,15 +61,11 @@ public class CategoriesQuery {
             }
         }
 
-        return new HashSet<>(ownerCategoriesMap.values());
+        return ownerCategoriesMap;
     }
 
-    private String determineDistance(String distanceToken) {
-        // Search for year in index-name (to remove it).
-        String pattern = "\\d{4}$";
-        Pattern r = Pattern.compile(pattern);
-        Matcher matcher = r.matcher(distanceToken);
-
+    public String determineDistance(String distanceToken) {
+        Matcher matcher = yearPattern.matcher(distanceToken);
         String distance = "hour";
         if (matcher.find()) {
             distance = distanceToken.substring(0, matcher.start());
