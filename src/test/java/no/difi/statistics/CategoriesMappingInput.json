@@ -1,0 +1,596 @@
+{
+  "991825827@kontaktregister@hour2021":
+  {
+    "mappings":
+    {
+      "properties":
+      {
+        "brukereIKontaktregisteret":
+        {
+          "type": "long"
+        },
+        "brukereMedDigipost":
+        {
+          "type": "long"
+        },
+        "brukereMedEboks":
+        {
+          "type": "long"
+        },
+        "brukereMedEpost":
+        {
+          "type": "long"
+        },
+        "brukereMedEpostOgEllerMobil":
+        {
+          "type": "long"
+        },
+        "brukereMedMobil":
+        {
+          "type": "long"
+        },
+        "brukereMedPostkasse":
+        {
+          "type": "long"
+        },
+        "brukereMedReservasjon":
+        {
+          "type": "long"
+        },
+        "brukereMedReservasjonOgEpostEllerMobil":
+        {
+          "type": "long"
+        },
+        "brukereMedReservasjonUtenVerkenEpostEllerMobil":
+        {
+          "type": "long"
+        },
+        "timestamp":
+        {
+          "type": "date"
+        }
+      }
+    }
+  },
+  "991825827@idporten-innlogging@hour2022":
+  {
+    "mappings":
+    {
+      "properties":
+      {
+        "Antall":
+        {
+          "type": "long"
+        },
+        "BankID":
+        {
+          "type": "long"
+        },
+        "BankID mobil":
+        {
+          "type": "long"
+        },
+        "BuyPass":
+        {
+          "type": "long"
+        },
+        "Buypass passport":
+        {
+          "type": "long"
+        },
+        "Commfides":
+        {
+          "type": "long"
+        },
+        "Federated":
+        {
+          "type": "long"
+        },
+        "MinID":
+        {
+          "type": "long"
+        },
+        "MinID App":
+        {
+          "type": "long"
+        },
+        "MinID OTC":
+        {
+          "type": "long"
+        },
+        "MinID PIN":
+        {
+          "type": "long"
+        },
+        "MinID passport":
+        {
+          "type": "long"
+        },
+        "category":
+        {
+          "properties":
+          {
+            "Kategori 3/3":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "TE":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "TE-entityId":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "TE-orgnum":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "TL":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "TL-entityId":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "TL-orgnum":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            }
+          }
+        },
+        "eIDAS":
+        {
+          "type": "long"
+        },
+        "timestamp":
+        {
+          "type": "date"
+        }
+      }
+    }
+  },
+  "991825827@efmtest@hour2021":
+  {
+    "mappings":
+    {
+      "properties":
+      {
+        "antall":
+        {
+          "type": "long"
+        },
+        "category":
+        {
+          "properties":
+          {
+            "document_identifier":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "orgnr":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "process_identifier":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "service_identifier":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "status":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            }
+          }
+        },
+        "timestamp":
+        {
+          "type": "date"
+        }
+      }
+    }
+  },
+  "991825827@idporten-innlogging@hour2021":
+  {
+    "mappings":
+    {
+      "properties":
+      {
+        "Antall":
+        {
+          "type": "long"
+        },
+        "BankID":
+        {
+          "type": "long"
+        },
+        "BankID mobil":
+        {
+          "type": "long"
+        },
+        "BuyPass":
+        {
+          "type": "long"
+        },
+        "Buypass passport":
+        {
+          "type": "long"
+        },
+        "Commfides":
+        {
+          "type": "long"
+        },
+        "Federated":
+        {
+          "type": "long"
+        },
+        "MinID":
+        {
+          "type": "long"
+        },
+        "MinID App":
+        {
+          "type": "long"
+        },
+        "MinID OTC":
+        {
+          "type": "long"
+        },
+        "MinID PIN":
+        {
+          "type": "long"
+        },
+        "MinID passport":
+        {
+          "type": "long"
+        },
+        "category":
+        {
+          "properties":
+          {
+            "Kategori 1/3":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "Kategori 2/3":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "TE":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "TE-entityId":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "TE-orgnum":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "TL":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "TL-entityId":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "TL-orgnum":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            }
+          }
+        },
+        "eIDAS":
+        {
+          "type": "long"
+        },
+        "timestamp":
+        {
+          "type": "date"
+        }
+      }
+    }
+  },
+  "991825827@efmtest@hour2022":
+  {
+    "mappings":
+    {
+      "properties":
+      {
+        "antall":
+        {
+          "type": "long"
+        },
+        "category":
+        {
+          "properties":
+          {
+            "document_identifier":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "orgnr":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "process_identifier":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "service_identifier":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "status":
+            {
+              "type": "text",
+              "fields":
+              {
+                "keyword":
+                {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            }
+          }
+        },
+        "timestamp":
+        {
+          "type": "date"
+        }
+      }
+    }
+  },
+  "991825827@kontaktregister@hour2022":
+  {
+    "mappings":
+    {
+      "properties":
+      {
+        "brukereIKontaktregisteret":
+        {
+          "type": "long"
+        },
+        "brukereMedDigipost":
+        {
+          "type": "long"
+        },
+        "brukereMedEboks":
+        {
+          "type": "long"
+        },
+        "brukereMedEpost":
+        {
+          "type": "long"
+        },
+        "brukereMedEpostOgEllerMobil":
+        {
+          "type": "long"
+        },
+        "brukereMedMobil":
+        {
+          "type": "long"
+        },
+        "brukereMedPostkasse":
+        {
+          "type": "long"
+        },
+        "brukereMedReservasjon":
+        {
+          "type": "long"
+        },
+        "brukereMedReservasjonOgEpostEllerMobil":
+        {
+          "type": "long"
+        },
+        "brukereMedReservasjonUtenVerkenEpostEllerMobil":
+        {
+          "type": "long"
+        },
+        "timestamp":
+        {
+          "type": "date"
+        }
+      }
+    }
+  }
+}

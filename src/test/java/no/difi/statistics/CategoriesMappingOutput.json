@@ -1,0 +1,36 @@
+[
+  {
+    "owner": "991825827",
+    "name": "efmtest",
+    "distance": "hours",
+    "categories": [
+      "service_identifier",
+      "document_identifier",
+      "process_identifier",
+      "orgnr",
+      "status"
+    ]
+  },
+  {
+    "owner": "991825827",
+    "name": "kontaktregister",
+    "distance": "hours",
+    "categories": []
+  },
+  {
+    "owner": "991825827",
+    "name": "idporten-innlogging",
+    "distance": "hours",
+    "categories": [
+      "TE-orgnum",
+      "TL-orgnum",
+      "TE",
+      "TL-entityId",
+      "TE-entityId",
+      "TL",
+      "Kategori 2/3",
+      "Kategori 3/3",
+      "Kategori 1/3"
+    ]
+  }
+]
