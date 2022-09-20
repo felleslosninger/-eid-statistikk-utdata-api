@@ -1,12 +1,9 @@
 package no.difi.statistics;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import no.difi.statistics.elasticsearch.commands.CategoriesQuery;
 import no.difi.statistics.model.OwnerCategories;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -19,17 +16,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CategoriesQueryTest {
-
-    @BeforeAll
-    static void setup() {}
-
-    @BeforeEach
-    void init() {}
-
-    @Test
-    public void testAddition() {
-        assertEquals(2, 1 + 1);
-    }
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     @Test
     public void testMinuteDistance() {
@@ -48,25 +35,13 @@ public class CategoriesQueryTest {
     }
 
     @Test
-    public void testKeyIsPresent() {
+    public void testKeyIsPresent() throws IOException {
         Path path = Paths.get("src/test/java/no/difi/statistics/CategoriesMappingInput.json");
-        String mappings = null;
-        try {
-            mappings = Files.lines(path).reduce("", String::concat);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String mappings = Files.lines(path).reduce("", String::concat);
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode jsonNode = null;
-        try {
-            jsonNode = mapper.readTree(mappings);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        JsonNode jsonNode = mapper.readTree(mappings);
 
         CategoriesQuery categoriesQuery = new CategoriesQuery();
-        assert jsonNode != null;
         Map<String, OwnerCategories> ownerCategoriesMap = categoriesQuery.traverseJsonNode(jsonNode);
 
         assertFalse(ownerCategoriesMap.containsKey("991825827:foo-bar-baz:hours"));
@@ -79,25 +54,13 @@ public class CategoriesQueryTest {
     }
 
     @Test
-    public void testCorrectLengthInSetIsReturned() {
+    public void testCorrectLengthInSetIsReturned() throws IOException {
         Path path = Paths.get("src/test/java/no/difi/statistics/CategoriesMappingInput.json");
-        String mappings = null;
-        try {
-            mappings = Files.lines(path).reduce("", String::concat);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String mappings = Files.lines(path).reduce("", String::concat);
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode jsonNode = null;
-        try {
-            jsonNode = mapper.readTree(mappings);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        JsonNode jsonNode = mapper.readTree(mappings);
 
         CategoriesQuery categoriesQuery = new CategoriesQuery();
-        assert jsonNode != null;
         Map<String, OwnerCategories> ownerCategoriesMap = categoriesQuery.traverseJsonNode(jsonNode);
 
         OwnerCategories efmtestCategories = ownerCategoriesMap.get("991825827:efmtest:hours");
@@ -111,25 +74,13 @@ public class CategoriesQueryTest {
     }
 
     @Test
-    public void testValidSetIsReturned() {
+    public void testValidSetIsReturned() throws IOException {
         Path path = Paths.get("src/test/java/no/difi/statistics/CategoriesMappingInput.json");
-        String mappings = null;
-        try {
-            mappings = Files.lines(path).reduce("", String::concat);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String mappings = Files.lines(path).reduce("", String::concat);
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode jsonNode = null;
-        try {
-            jsonNode = mapper.readTree(mappings);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        JsonNode jsonNode = mapper.readTree(mappings);
 
         CategoriesQuery categoriesQuery = new CategoriesQuery();
-        assert jsonNode != null;
         Map<String, OwnerCategories> ownerCategoriesMap = categoriesQuery.traverseJsonNode(jsonNode);
 
         OwnerCategories efmtestCategories = ownerCategoriesMap.get("991825827:efmtest:hours");
@@ -139,19 +90,19 @@ public class CategoriesQueryTest {
         Set<String> testSet;
 
         testSet = Set.of("a", "b", "c");
-        assertNotEquals(efmtestCategories.getCategories(), testSet);
+        assertNotEquals(testSet, efmtestCategories.getCategories());
 
         testSet = Set.of("service_identifier", "document_identifier", "process_identifier", "orgnr", "status");
-        assertEquals(efmtestCategories.getCategories(), testSet);
+        assertEquals(testSet, efmtestCategories.getCategories());
 
         testSet = Set.of("a", "b", "c");
-        assertNotEquals(krrCategories.getCategories(), testSet);
+        assertNotEquals(testSet, krrCategories.getCategories());
 
         testSet = Set.of();
-        assertEquals(krrCategories.getCategories(), testSet);
+        assertEquals(testSet, krrCategories.getCategories());
 
         testSet = Set.of("d", "e", "f");
-        assertNotEquals(idportenCategories.getCategories(), testSet);
+        assertNotEquals(testSet, idportenCategories.getCategories());
 
         testSet = Set.of("TE-orgnum",
                 "TL-orgnum",
@@ -162,6 +113,6 @@ public class CategoriesQueryTest {
                 "Kategori 2/3",
                 "Kategori 3/3",
                 "Kategori 1/3");
-        assertEquals(idportenCategories.getCategories(), testSet);
+        assertEquals(testSet, idportenCategories.getCategories());
     }
 }
