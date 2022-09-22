@@ -12,8 +12,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Set;
 
 import static java.lang.String.format;
 import static no.difi.statistics.model.QueryFilter.queryFilter;
@@ -22,7 +24,7 @@ import static no.difi.statistics.model.QueryFilter.queryFilter;
 @RestController
 public class QueryRestController {
 
-    private QueryService service;
+    private final QueryService service;
 
     public QueryRestController(QueryService service) {
         this.service = service;
@@ -47,6 +49,12 @@ public class QueryRestController {
     @GetMapping("/meta")
     public List<TimeSeriesDefinition> available() {
         return service.availableTimeSeries();
+    }
+
+    @Operation(summary = "Hent ut liste over tilgjengelege kategorier")
+    @GetMapping("/categories")
+    public Set<OwnerCategories> categories() throws IOException {
+        return service.categories();
     }
 
     @Operation(summary = "Hent data frå ein tidsserie")
@@ -103,7 +111,7 @@ public class QueryRestController {
         return service.lastHistogram(seriesDefinition, targetDistance, queryFilter().range(from, to).categories(categories).build());
     }
 
-    @Operation(summary = "Hent eitt datapunkt med sum av målingar",
+    @Operation(summary = "Hent eit datapunkt med sum av målingar",
         description = "Returnerer eitt datapunkt")
     @GetMapping("{owner}/{seriesName}/{distance}/sum")
     public TimeSeriesPoint sum(

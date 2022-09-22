@@ -1,17 +1,15 @@
 package no.difi.statistics.elasticsearch;
 
-import no.difi.statistics.model.MeasurementDistance;
-import no.difi.statistics.model.TimeSeriesDefinition;
-import no.difi.statistics.model.TimeSeriesPoint;
-import no.difi.statistics.model.PercentileFilter;
-import no.difi.statistics.model.QueryFilter;
 import no.difi.statistics.QueryService;
+import no.difi.statistics.model.*;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 public class ElasticsearchQueryService implements QueryService {
 
-    private CommandFactory commandFactory;
+    private final CommandFactory commandFactory;
 
     public ElasticsearchQueryService(CommandFactory commandFactory) {
         this.commandFactory = commandFactory;
@@ -20,6 +18,11 @@ public class ElasticsearchQueryService implements QueryService {
     @Override
     public List<TimeSeriesDefinition> availableTimeSeries() {
         return commandFactory.availableTimeSeries().build().execute();
+    }
+
+    @Override
+    public Set<OwnerCategories> categories() throws IOException {
+        return commandFactory.categories().build().execute();
     }
 
     @Override

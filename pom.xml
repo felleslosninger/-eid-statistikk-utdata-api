@@ -27,6 +27,11 @@
         <springdoc.version>1.6.11</springdoc.version>
         <jaxb.version>2.3.1</jaxb.version>
         <javax.json.version>1.1.4</javax.json.version>
+        <!--
+            Spring Boot v. 2.7.3 uses snakeyaml v. 1.30 which includes issue https://github.com/spring-projects/spring-boot/issues/32221
+            So we must manually upgrade it to newer version until Spring Boot contains the upgraded version. Otherwise, container scan will fail.
+         -->
+        <snakeyaml.version>1.31</snakeyaml.version>
     </properties>
 
     <repositories>
