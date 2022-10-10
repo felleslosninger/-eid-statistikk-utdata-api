@@ -26,6 +26,11 @@ public class ElasticsearchQueryService implements QueryService {
     }
 
     @Override
+    public Set<CategoryValues> categoryValues() throws IOException {
+        return commandFactory.categoryValues().build().execute();
+    }
+
+    @Override
     public List<TimeSeriesPoint> query(TimeSeriesDefinition seriesDefinition, QueryFilter queryFilter) {
         return commandFactory.query()
                 .seriesDefinition(seriesDefinition).queryFilter(queryFilter)

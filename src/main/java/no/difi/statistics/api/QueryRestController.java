@@ -57,6 +57,12 @@ public class QueryRestController {
         return service.categories();
     }
 
+    @Operation(summary = "Hent ut liste over unikke kategorier")
+    @GetMapping("/category_values")
+    public Set<CategoryValues> categoryValues() throws IOException {
+        return service.categoryValues();
+    }
+
     @Operation(summary = "Hent data frå ein tidsserie")
     @GetMapping("/{owner}/{seriesName}/{distance}")
     public List<TimeSeriesPoint> query(

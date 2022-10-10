@@ -1,6 +1,7 @@
 package no.difi.statistics.elasticsearch.commands;
 
 import no.difi.statistics.model.CategoryValues;
+import no.difi.statistics.model.OwnerCategories;
 import org.apache.lucene.search.TotalHits;
 import org.elasticsearch.action.search.*;
 import org.elasticsearch.client.RequestOptions;
@@ -16,13 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class CategoryValuesQuery {
 
@@ -43,7 +40,7 @@ public class CategoryValuesQuery {
     private CategoryValuesQuery() { }
 
     public Set<CategoryValues> execute() throws IOException {
-        Map<CategoryValues, Set<String>> categoryValuesMap = new HashMap<>();
+        Map<OwnerCategories, ArrayList<Map<String, String>>> categoryValuesMap = new HashMap<>();
 
 
         /*
@@ -112,7 +109,7 @@ public class CategoryValuesQuery {
         SearchRequest searchRequest = new SearchRequest(searchTerm);
         searchRequest.scroll(scroll);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.aggregation(AggregationBuilders.terms().field())
+        searchSourceBuilder.aggregation(AggregationBuilders.terms("unique_categories").field("category.*"));
         searchSourceBuilder.query(QueryBuilders.matchAllQuery());
         searchSourceBuilder.size(10000);
         searchRequest.source(searchSourceBuilder);
@@ -145,20 +142,22 @@ public class CategoryValuesQuery {
 
                     CategoryValues indexName = new CategoryValues(index[0], index[1], distance);
                     if (categoryValuesMap.containsKey(indexName)) {
-                        categories = categoryValuesMap.get(indexName);
+                        logger.info("existing index-name");
+                        //categories = categoryValuesMap.get(indexName);
                     } else {
                         // This else is needed if there is a timeseries without categories. We want to display them as well.
-                        categoryValuesMap.put(indexName, categories);
+                        logger.info("create index-name");
+                        //categoryValuesMap.put(indexName, categories);
                     }
 
-                    Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+/*                    Map<String, Object> sourceAsMap = hit.getSourceAsMap();
                     for (Object key : sourceAsMap.keySet()) {
                         if (key.toString().startsWith("category.")) {
                             String[] category = key.toString().split(splitValue);
                             categories.add(category[1]);
                             categoryValuesMap.put(indexName, categories);
                         }
-                    }
+                    }*/
                 }
             }
 
@@ -175,13 +174,19 @@ public class CategoryValuesQuery {
         boolean succeeded = clearScrollResponse.isSucceeded();
         logger.info("succeeded: {}", succeeded);
 
-        return categoryValuesMap.entrySet().stream()
+/*        return categoryValuesMap.entrySet().stream()
                 .map(entry -> {
                     CategoryValues indexName = new CategoryValues(entry.getKey().getOwner(), entry.getKey().getName(), entry.getKey().getDistance());
                     indexName.setCategories(entry.getValue());
                     return indexName;
                 })
-                .collect(Collectors.toSet());
+                .collect(Collectors.toSet());*/
+
+        return new HashSet<>();
+    }
+
+    private TreeMap<String, String> sortCategories(Map<String, String> categoriesMap) {
+        return new TreeMap<>(categoriesMap);
     }
 
     public static Builder builder() {

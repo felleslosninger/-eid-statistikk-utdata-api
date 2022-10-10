@@ -12,6 +12,8 @@ public interface QueryService {
 
     Set<OwnerCategories> categories() throws IOException;
 
+    Set<CategoryValues> categoryValues() throws IOException;
+
     TimeSeriesPoint last(TimeSeriesDefinition seriesDefinition, QueryFilter queryFilter);
 
     List<TimeSeriesPoint> query(TimeSeriesDefinition seriesDefinition, QueryFilter queryFilter);
