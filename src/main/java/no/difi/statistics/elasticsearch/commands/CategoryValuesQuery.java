@@ -11,7 +11,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.Scroll;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,7 +108,9 @@ public class CategoryValuesQuery {
         SearchRequest searchRequest = new SearchRequest(searchTerm);
         searchRequest.scroll(scroll);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.aggregation(AggregationBuilders.terms("unique_categories").field("category.*"));
+        String[] includeFields = new String[] {"category.*"};
+        String[] excludeFields = new String[] {""};
+        searchSourceBuilder.fetchSource(includeFields, excludeFields);
         searchSourceBuilder.query(QueryBuilders.matchAllQuery());
         searchSourceBuilder.size(10000);
         searchRequest.source(searchSourceBuilder);
@@ -124,6 +125,7 @@ public class CategoryValuesQuery {
         SearchHit[] searchHits = hits.getHits();
         while (searchHits != null && searchHits.length > 0) {
             for (SearchHit hit : searchHits) {
+                logger.info("search-hit: {}", hit);
                 Set<String> categories = new HashSet<>();
                 // 991825827@idporten-innlogging@hour2022
                 String[] index = hit.getIndex().split("@", 3);
@@ -142,11 +144,11 @@ public class CategoryValuesQuery {
 
                     CategoryValues indexName = new CategoryValues(index[0], index[1], distance);
                     if (categoryValuesMap.containsKey(indexName)) {
-                        logger.info("existing index-name");
+                        logger.info("existing index-name: {}", indexName);
                         //categories = categoryValuesMap.get(indexName);
                     } else {
                         // This else is needed if there is a timeseries without categories. We want to display them as well.
-                        logger.info("create index-name");
+                        logger.info("create index-name: {}", indexName);
                         //categoryValuesMap.put(indexName, categories);
                     }
 
