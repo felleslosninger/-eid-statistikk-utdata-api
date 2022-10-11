@@ -1,7 +1,6 @@
 package no.difi.statistics.elasticsearch.commands;
 
 import no.difi.statistics.model.CategoryValues;
-import no.difi.statistics.model.OwnerCategories;
 import org.apache.lucene.search.TotalHits;
 import org.elasticsearch.action.search.*;
 import org.elasticsearch.client.RequestOptions;
@@ -39,7 +38,7 @@ public class CategoryValuesQuery {
     private CategoryValuesQuery() { }
 
     public Set<CategoryValues> execute() throws IOException {
-        Map<OwnerCategories, ArrayList<Map<String, String>>> categoryValuesMap = new HashMap<>();
+        HashMap<Map<String, Object>, CategoryValues> categoriesAndIndexNameMap = new HashMap<>();
 
 
         /*
@@ -125,11 +124,12 @@ public class CategoryValuesQuery {
         SearchHit[] searchHits = hits.getHits();
         while (searchHits != null && searchHits.length > 0) {
             for (SearchHit hit : searchHits) {
-                logger.info("search-hit: {}", hit);
+                //logger.info("search-hit: {}", hit);
                 Set<String> categories = new HashSet<>();
                 // 991825827@idporten-innlogging@hour2022
                 String[] index = hit.getIndex().split("@", 3);
                 if (index.length == 3) {
+                    Map<String, Object> sortedSourceMap = new TreeMap<>(hit.getSourceAsMap());
                     Matcher matcher = yearPattern.matcher(index[2]);
                     String distance = "hour";
                     if (matcher.find()) {
@@ -143,23 +143,7 @@ public class CategoryValuesQuery {
                     }
 
                     CategoryValues indexName = new CategoryValues(index[0], index[1], distance);
-                    if (categoryValuesMap.containsKey(indexName)) {
-                        logger.info("existing index-name: {}", indexName);
-                        //categories = categoryValuesMap.get(indexName);
-                    } else {
-                        // This else is needed if there is a timeseries without categories. We want to display them as well.
-                        logger.info("create index-name: {}", indexName);
-                        //categoryValuesMap.put(indexName, categories);
-                    }
-
-/*                    Map<String, Object> sourceAsMap = hit.getSourceAsMap();
-                    for (Object key : sourceAsMap.keySet()) {
-                        if (key.toString().startsWith("category.")) {
-                            String[] category = key.toString().split(splitValue);
-                            categories.add(category[1]);
-                            categoryValuesMap.put(indexName, categories);
-                        }
-                    }*/
+                    categoriesAndIndexNameMap.put(sortedSourceMap, indexName);
                 }
             }
 
@@ -175,16 +159,27 @@ public class CategoryValuesQuery {
         ClearScrollResponse clearScrollResponse = elasticSearchClient.clearScroll(clearScrollRequest, RequestOptions.DEFAULT);
         boolean succeeded = clearScrollResponse.isSucceeded();
         logger.info("succeeded: {}", succeeded);
+        logger.info("categoriesAndIndexNameMap:\n{}", categoriesAndIndexNameMap);
+        logger.info("categoriesAndIndexNameMap size: {}", categoriesAndIndexNameMap.size());
 
-/*        return categoryValuesMap.entrySet().stream()
-                .map(entry -> {
-                    CategoryValues indexName = new CategoryValues(entry.getKey().getOwner(), entry.getKey().getName(), entry.getKey().getDistance());
-                    indexName.setCategories(entry.getValue());
-                    return indexName;
-                })
-                .collect(Collectors.toSet());*/
+        Map<CategoryValues, List<Map<String, Object>>> categoryValuesMap = new HashMap<>();
+        for (Map.Entry<Map<String, Object>, CategoryValues> mapCategoryValuesEntry : categoriesAndIndexNameMap.entrySet()) {
+            Map<String, Object> categoryMap = mapCategoryValuesEntry.getKey();
+            CategoryValues categoryValues = mapCategoryValuesEntry.getValue();
+            logger.info("categoryMap: {}", categoryMap);
+            logger.info("categoryValues: {}", categoryValues);
+            if (categoryValuesMap.containsKey(categoryValues)) {
+                categoryValuesMap.get(categoryValues).add(categoryMap);
+            } else {
+                ArrayList arrayListList = new ArrayList<Map<String, Object>>();
+                arrayListList.addAll(Collections.singleton(categoryMap));
+                categoryValuesMap.put(categoryValues, arrayListList);
+            }
+        }
 
-        return new HashSet<>();
+        logger.info("categoryValuesMap: {}", categoryValuesMap);
+        Set<CategoryValues> categoryValuesSet = new HashSet<>();
+        return categoryValuesSet;
     }
 
     private TreeMap<String, String> sortCategories(Map<String, String> categoriesMap) {

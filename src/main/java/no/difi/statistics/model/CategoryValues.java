@@ -10,9 +10,9 @@ public class CategoryValues {
     private final String owner;
     private final String name;
     private final String distance;
-    private final Set<Map<String, String>> categories;
+    private final Set<Map<String, Object>> categories;
 
-    public Set<Map<String, String>> getCategories() {
+    public Set<Map<String, Object>> getCategories() {
         return categories;
     }
 
