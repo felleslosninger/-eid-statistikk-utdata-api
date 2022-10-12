@@ -27,9 +27,6 @@ public class CategoryValuesQuery {
     private static final String yearRegex = "\\d{4}$";
     private static final Pattern yearPattern = Pattern.compile(yearRegex);
 
-    // Interested in lines like "category.TE-orgnum" : "983971636".
-    private static final String splitValue = "category\\.";
-
     // Example of an index-name: 991825827@idporten-innlogging@hour2022
     private static final String searchTerm = "*@*@*";
 
@@ -38,12 +35,24 @@ public class CategoryValuesQuery {
     private CategoryValuesQuery() { }
 
     public Set<CategoryValues> execute() throws IOException {
-        HashMap<Map<String, Object>, CategoryValues> categoriesAndIndexNameMap = new HashMap<>();
 
+        // Get categories as key, index-name as value from ES.
+        HashMap<Map<String, Object>, CategoryValues> categoriesAndIndexNameMap = getCategoriesAsKeyFromES();
 
+        // Insert into map using ES index-name as key, categories as value, i.e. swap above key/value.
+        Map<CategoryValues, Set<Map<String, Object>>> categoryValuesMap = getIndexNameAsKey(categoriesAndIndexNameMap);
+        logger.info("categoryValuesMap: {}", categoryValuesMap);
+
+        // Merge key/value into a record.
+        return mergeKeyAndValue(categoryValuesMap);
+    }
+
+    private HashMap<Map<String, Object>, CategoryValues> getCategoriesAsKeyFromES() throws IOException {
         /*
-        Put into a HashMap and use index as key, categories into a HashSet as value.
-        When done merge key and value into a HashSet, so we can display in a proper json-format.
+        Traverse result from ES and put into a HashMap and use categories as key, indexname as value.
+        This will filter away any duplicate categories.
+        When done traverse HashMap, switch key and value and put into another HashMap.
+        Finally, traverse last HashMap and put into CategoryValues which is then returned.
 
         From
 
@@ -101,6 +110,8 @@ public class CategoryValuesQuery {
 
          */
 
+        HashMap<Map<String, Object>, CategoryValues> categoriesAndIndexNameMap = new HashMap<>();
+
         // Get a cursor to scroll through the results, set a size for each batch. And a timeout of 1 minute.
         // https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high-search-scroll.html
         final Scroll scroll = new Scroll(TimeValue.timeValueMinutes(1L));
@@ -125,7 +136,6 @@ public class CategoryValuesQuery {
         while (searchHits != null && searchHits.length > 0) {
             for (SearchHit hit : searchHits) {
                 //logger.info("search-hit: {}", hit);
-                Set<String> categories = new HashSet<>();
                 // 991825827@idporten-innlogging@hour2022
                 String[] index = hit.getIndex().split("@", 3);
                 if (index.length == 3) {
@@ -163,6 +173,10 @@ public class CategoryValuesQuery {
         logger.info("categoriesAndIndexNameMap:\n{}", categoriesAndIndexNameMap);
         logger.info("categoriesAndIndexNameMap size: {}", categoriesAndIndexNameMap.size());
 
+        return categoriesAndIndexNameMap;
+    }
+
+    private Map<CategoryValues, Set<Map<String, Object>>> getIndexNameAsKey(HashMap<Map<String, Object>, CategoryValues> categoriesAndIndexNameMap) {
         // Insert into map using ES index-name as key, categories as value.
         Map<CategoryValues, Set<Map<String, Object>>> categoryValuesMap = new HashMap<>();
         for (Map.Entry<Map<String, Object>, CategoryValues> mapCategoryValuesEntry : categoriesAndIndexNameMap.entrySet()) {
@@ -178,7 +192,10 @@ public class CategoryValuesQuery {
             }
         }
 
-        logger.info("categoryValuesMap: {}", categoryValuesMap);
+        return  categoryValuesMap;
+    }
+
+    private Set<CategoryValues> mergeKeyAndValue(Map<CategoryValues, Set<Map<String, Object>>> categoryValuesMap) {
         Set<CategoryValues> categoryValuesSet = new HashSet<>();
         for (Map.Entry<CategoryValues, Set<Map<String, Object>>> categoryValuesMapEntry : categoryValuesMap.entrySet()) {
             String owner = categoryValuesMapEntry.getKey().getOwner();
@@ -191,10 +208,6 @@ public class CategoryValuesQuery {
         }
 
         return categoryValuesSet;
-    }
-
-    private TreeMap<String, String> sortCategories(Map<String, String> categoriesMap) {
-        return new TreeMap<>(categoriesMap);
     }
 
     public static Builder builder() {
