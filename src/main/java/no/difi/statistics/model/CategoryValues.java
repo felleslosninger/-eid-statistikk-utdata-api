@@ -1,17 +1,17 @@
 package no.difi.statistics.model;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class CategoryValues {
 
     private final String owner;
     private final String name;
     private final String distance;
-    private final List<Map<String, Object>> categories;
+    private final Set<Map<String, Object>> categories;
 
-    public CategoryValues(String owner, String name, String distance, List<Map<String, Object>> categories) {
+    public CategoryValues(String owner, String name, String distance, Set<Map<String, Object>> categories) {
         this.owner = owner;
         this.name = name;
         this.distance = distance;
@@ -30,7 +30,7 @@ public class CategoryValues {
         return distance;
     }
 
-    public List<Map<String, Object>> getCategories() {
+    public Set<Map<String, Object>> getCategories() {
         return categories;
     }
 

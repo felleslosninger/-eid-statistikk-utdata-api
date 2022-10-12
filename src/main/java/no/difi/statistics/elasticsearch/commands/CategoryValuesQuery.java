@@ -142,7 +142,7 @@ public class CategoryValuesQuery {
                         distance = "minutes";
                     }
 
-                    List<Map<String, Object>> empty = new ArrayList<>();
+                    Set<Map<String, Object>> empty = new HashSet<>();
                     CategoryValues indexName = new CategoryValues(index[0], index[1], distance, empty);
                     categoriesAndIndexNameMap.put(sortedSourceMap, indexName);
                 }
@@ -164,7 +164,7 @@ public class CategoryValuesQuery {
         logger.info("categoriesAndIndexNameMap size: {}", categoriesAndIndexNameMap.size());
 
         // Insert into map using ES index-name as key, categories as value.
-        Map<CategoryValues, List<Map<String, Object>>> categoryValuesMap = new HashMap<>();
+        Map<CategoryValues, Set<Map<String, Object>>> categoryValuesMap = new HashMap<>();
         for (Map.Entry<Map<String, Object>, CategoryValues> mapCategoryValuesEntry : categoriesAndIndexNameMap.entrySet()) {
             Map<String, Object> categoryKey = mapCategoryValuesEntry.getKey();
             CategoryValues categoryValues = mapCategoryValuesEntry.getValue();
@@ -173,19 +173,18 @@ public class CategoryValuesQuery {
             if (categoryValuesMap.containsKey(categoryValues)) {
                 categoryValuesMap.get(categoryValues).add(categoryKey);
             } else {
-                ArrayList arrayListList = new ArrayList<Map<String, Object>>();
-                arrayListList.addAll(Collections.singleton(categoryKey));
+                Set<Map<String, Object>> arrayListList = new HashSet<>(Collections.singleton(categoryKey));
                 categoryValuesMap.put(categoryValues, arrayListList);
             }
         }
 
         logger.info("categoryValuesMap: {}", categoryValuesMap);
         Set<CategoryValues> categoryValuesSet = new HashSet<>();
-        for (Map.Entry<CategoryValues, List<Map<String, Object>>> categoryValuesMapEntry : categoryValuesMap.entrySet()) {
+        for (Map.Entry<CategoryValues, Set<Map<String, Object>>> categoryValuesMapEntry : categoryValuesMap.entrySet()) {
             String owner = categoryValuesMapEntry.getKey().getOwner();
             String name = categoryValuesMapEntry.getKey().getName();
             String distance = categoryValuesMapEntry.getKey().getDistance();
-            List<Map<String, Object>> value = categoryValuesMapEntry.getValue();
+            Set<Map<String, Object>> value = categoryValuesMapEntry.getValue();
             logger.info("key: {}", categoryValuesMapEntry.getKey());
             logger.info("value: {}", value);
             categoryValuesSet.add(new CategoryValues(owner, name, distance, categoryValuesMapEntry.getValue()));
