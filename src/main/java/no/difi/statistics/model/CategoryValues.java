@@ -4,19 +4,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-public class CategoryValues {
-
-    private final String owner;
-    private final String name;
-    private final String distance;
-    private final Set<Map<String, Object>> categories;
-
-    public CategoryValues(String owner, String name, String distance, Set<Map<String, Object>> categories) {
-        this.owner = owner;
-        this.name = name;
-        this.distance = distance;
-        this.categories = categories;
-    }
+public record CategoryValues(String owner, String name, String distance,
+                             Set<Map<String, Object>> categories) {
 
     public String getOwner() {
         return owner;
