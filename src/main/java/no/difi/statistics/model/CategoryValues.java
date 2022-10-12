@@ -1,26 +1,21 @@
 package no.difi.statistics.model;
 
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 public class CategoryValues {
 
     private final String owner;
     private final String name;
     private final String distance;
-    private final Set<Map<String, Object>> categories;
+    private final List<Map<String, Object>> categories;
 
-    public Set<Map<String, Object>> getCategories() {
-        return categories;
-    }
-
-    public CategoryValues(String owner, String name, String distance) {
+    public CategoryValues(String owner, String name, String distance, List<Map<String, Object>> categories) {
         this.owner = owner;
         this.name = name;
         this.distance = distance;
-        this.categories = new HashSet<>();
+        this.categories = categories;
     }
 
     public String getOwner() {
@@ -33,6 +28,10 @@ public class CategoryValues {
 
     public String getDistance() {
         return distance;
+    }
+
+    public List<Map<String, Object>> getCategories() {
+        return categories;
     }
 
     @Override
