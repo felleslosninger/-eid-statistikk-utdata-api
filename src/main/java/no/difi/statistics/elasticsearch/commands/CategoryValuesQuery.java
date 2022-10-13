@@ -39,7 +39,7 @@ public class CategoryValuesQuery {
         // Get categories as key, index-name as value from ES.
         HashMap<Map<String, Object>, CategoryValues> categoriesAndIndexNameMap = getCategoriesAsKeyFromES();
 
-        // Insert into map using ES index-name as key, categories as value, i.e. swap above key/value.
+        // Insert into map using index-name as key, categories as value, i.e. swap above key/value.
         Map<CategoryValues, Set<Map<String, Object>>> categoryValuesMap = getIndexNameAsKey(categoriesAndIndexNameMap);
         logger.info("categoryValuesMap: {}", categoryValuesMap);
 
@@ -140,17 +140,7 @@ public class CategoryValuesQuery {
                 String[] index = hit.getIndex().split("@", 3);
                 if (index.length == 3) {
                     Map<String, Object> sortedSourceMap = new TreeMap<>(hit.getSourceAsMap());
-                    Matcher matcher = yearPattern.matcher(index[2]);
-                    String distance = "hour";
-                    if (matcher.find()) {
-                        distance = index[2].substring(0, matcher.start());
-                    }
-
-                    if ("hour".equals(distance)) {
-                        distance = "hours";
-                    } else {
-                        distance = "minutes";
-                    }
+                    String distance = getDistance(index[2]);
 
                     Set<Map<String, Object>> empty = new HashSet<>();
                     CategoryValues indexName = new CategoryValues(index[0], index[1], distance, empty);
@@ -208,6 +198,22 @@ public class CategoryValuesQuery {
         }
 
         return categoryValuesSet;
+    }
+
+    private String getDistance(String d) {
+        Matcher matcher = yearPattern.matcher(d);
+        String distance = "hour";
+        if (matcher.find()) {
+            distance = d.substring(0, matcher.start());
+        }
+
+        if ("hour".equals(distance)) {
+            distance = "hours";
+        } else {
+            distance = "minutes";
+        }
+
+        return distance;
     }
 
     public static Builder builder() {
