@@ -23,16 +23,12 @@ public class CategoryValuesQuery {
 
     private RestHighLevelClient elasticSearchClient;
 
-    // Search for year in index-name (to remove it).
-    private static final String yearRegex = "\\d{4}$";
-    private static final Pattern yearPattern = Pattern.compile(yearRegex);
-
     // Example of an index-name: 991825827@idporten-innlogging@hour2022
     private static final String searchTerm = "*@*@*";
 
     private static final Logger logger = LoggerFactory.getLogger(CategoryValuesQuery.class);
 
-    private CategoryValuesQuery() { }
+    public CategoryValuesQuery() { }
 
     public Set<CategoryValues> execute() throws IOException {
 
@@ -166,14 +162,12 @@ public class CategoryValuesQuery {
         return categoriesAndIndexNameMap;
     }
 
-    private Map<CategoryValues, Set<Map<String, Object>>> getIndexNameAsKey(HashMap<Map<String, Object>, CategoryValues> categoriesAndIndexNameMap) {
+    public Map<CategoryValues, Set<Map<String, Object>>> getIndexNameAsKey(HashMap<Map<String, Object>, CategoryValues> categoriesAndIndexNameMap) {
         // Insert into map using ES index-name as key, categories as value.
         Map<CategoryValues, Set<Map<String, Object>>> categoryValuesMap = new HashMap<>();
         for (Map.Entry<Map<String, Object>, CategoryValues> mapCategoryValuesEntry : categoriesAndIndexNameMap.entrySet()) {
             Map<String, Object> categoryKey = mapCategoryValuesEntry.getKey();
             CategoryValues categoryValues = mapCategoryValuesEntry.getValue();
-            logger.info("categoryKey: {}", categoryKey);
-            logger.info("categoryValues: {}", categoryValues);
             if (categoryValuesMap.containsKey(categoryValues)) {
                 categoryValuesMap.get(categoryValues).add(categoryKey);
             } else {
@@ -185,7 +179,7 @@ public class CategoryValuesQuery {
         return  categoryValuesMap;
     }
 
-    private Set<CategoryValues> mergeKeyAndValue(Map<CategoryValues, Set<Map<String, Object>>> categoryValuesMap) {
+    public Set<CategoryValues> mergeKeyAndValue(Map<CategoryValues, Set<Map<String, Object>>> categoryValuesMap) {
         Set<CategoryValues> categoryValuesSet = new HashSet<>();
         for (Map.Entry<CategoryValues, Set<Map<String, Object>>> categoryValuesMapEntry : categoryValuesMap.entrySet()) {
             String owner = categoryValuesMapEntry.getKey().getOwner();
@@ -200,7 +194,11 @@ public class CategoryValuesQuery {
         return categoryValuesSet;
     }
 
-    private String getDistance(String d) {
+    public String getDistance(String d) {
+        // Search for year in index-name (to remove it).
+        String yearRegex = "\\d{4}$";
+        Pattern yearPattern = Pattern.compile(yearRegex);
+
         Matcher matcher = yearPattern.matcher(d);
         String distance = "hour";
         if (matcher.find()) {

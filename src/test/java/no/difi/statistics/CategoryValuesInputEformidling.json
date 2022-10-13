@@ -1,0 +1,68 @@
+[
+  {
+    "_index": "991825827@efmtest@hour2022",
+    "_source":
+    {
+      "category.service_identifier": "DPE",
+      "category.document_identifier": "",
+      "category.process_identifier": "urn:no:difi:profile:einnsyn:journalpost:ver1.0",
+      "category.status": "LEVERT",
+      "category.orgnr": "922017433"
+    }
+  },
+  {
+    "_index": "991825827@efmtest@hour2022",
+    "_source":
+    {
+      "category.service_identifier": "DPI",
+      "category.document_identifier": "",
+      "category.process_identifier": "urn:no:difi:profile:digitalpost:vedtak:ver1.0",
+      "category.status": "SENDT",
+      "category.orgnr": "971032081"
+    }
+  },
+  {
+    "_index": "991825827@efmtest@hour2022",
+    "_source":
+    {
+      "category.service_identifier": "DPE",
+      "category.document_identifier": "",
+      "category.process_identifier": "urn:no:difi:profile:einnsyn:journalpost:ver1.0",
+      "category.status": "SENDT",
+      "category.orgnr": "964965226"
+    }
+  },
+  {
+    "_index": "991825827@efmtest@hour2022",
+    "_source":
+    {
+      "category.service_identifier": "DPE",
+      "category.document_identifier": "",
+      "category.process_identifier": "urn:no:difi:profile:einnsyn:journalpost:ver1.0",
+      "category.status": "OPPRETTET",
+      "category.orgnr": "964965226"
+    }
+  },
+  {
+    "_index": "991825827@efmtest@hour2022",
+    "_source":
+    {
+      "category.service_identifier": "DPE",
+      "category.document_identifier": "",
+      "category.process_identifier": "urn:no:difi:profile:einnsyn:journalpost:ver1.0",
+      "category.status": "OPPRETTET",
+      "category.orgnr": "922017433"
+    }
+  },
+  {
+    "_index": "991825827@efmtest@hour2022",
+    "_source":
+    {
+      "category.service_identifier": "DPI",
+      "category.document_identifier": "",
+      "category.process_identifier": "urn:no:difi:profile:digitalpost:vedtak:ver1.0",
+      "category.status": "LEVERT",
+      "category.orgnr": "915429785"
+    }
+  }
+]

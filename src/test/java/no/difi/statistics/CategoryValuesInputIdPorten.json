@@ -1,0 +1,98 @@
+[
+  {
+    "_index": "991825827@idporten-innlogging@hour2022",
+    "_source":
+    {
+      "category.TE": "Akershus universitetssykehus hf",
+      "category.TL-entityId": "idfed.ad.ahus.no",
+      "category.TE-orgnum": "983971636",
+      "category.TL-orgnum": "983971636",
+      "category.TE-entityId": "idfed.ad.ahus.no",
+      "category.TL": "Akershus universitetssykehus hf"
+    }
+  },
+  {
+    "_index": "991825827@idporten-innlogging@hour2022",
+    "_source":
+    {
+      "category.TE": "Altinn",
+      "category.TL-entityId": "sp.altinn.no",
+      "category.TE-orgnum": "991825827",
+      "category.TL-orgnum": "991825827",
+      "category.TE-entityId": "sp.altinn.no",
+      "category.TL": "Altinn"
+    }
+  },
+  {
+    "_index": "991825827@idporten-innlogging@hour2022",
+    "_source":
+    {
+      "category.TE": "Altinn",
+      "category.TL-entityId": "sp.altinn.no",
+      "category.TE-orgnum": "991825827",
+      "category.TL-orgnum": "991825827",
+      "category.TE-entityId": "sp.altinn.no",
+      "category.TL": "Altinn"
+    }
+  },
+  {
+    "_index": "991825827@idporten-innlogging@hour2022",
+    "_source":
+    {
+      "category.TE": "Alver kommune",
+      "category.TL-entityId": "vismainnsyn.alver.kommune.no",
+      "category.TE-orgnum": "920290922",
+      "category.TL-orgnum": "920290922",
+      "category.TE-entityId": "vismainnsyn.alver.kommune.no",
+      "category.TL": "Alver kommune"
+    }
+  },
+  {
+    "_index": "991825827@idporten-innlogging@hour2022",
+    "_source":
+    {
+      "category.TE": "Alver kommune",
+      "category.TL-entityId": "www.alver.kommune.no",
+      "category.TE-orgnum": "920290922",
+      "category.TL-orgnum": "920290922",
+      "category.TE-entityId": "www.alver.kommune.no",
+      "category.TL": "Alver kommune"
+    }
+  },
+  {
+    "_index": "991825827@idporten-innlogging@hour2022",
+    "_source":
+    {
+      "category.TE": "Apotek 1 gruppen as",
+      "category.TL-entityId": "prod-pasientnett2020",
+      "category.TE-orgnum": "983044778",
+      "category.TL-orgnum": "983044778",
+      "category.TE-entityId": "prod-pasientnett2020",
+      "category.TL": "Apotek 1 gruppen as"
+    }
+  },
+  {
+    "_index": "991825827@idporten-innlogging@hour2022",
+    "_source":
+    {
+      "category.TE": "Apotek1",
+      "category.TL-entityId": "www.apotek1.no",
+      "category.TE-orgnum": "983044778",
+      "category.TL-orgnum": "983044778",
+      "category.TE-entityId": "www.apotek1.no",
+      "category.TL": "Apotek1"
+    }
+  },
+  {
+    "_index": "991825827@idporten-innlogging@hour2022",
+    "_source":
+    {
+      "category.TE": "Askerbibliotekene",
+      "category.TL-entityId": "https://auth.bib.no/simplesaml/module.php/saml/sp/metadata.php/idporten-asker-sp",
+      "category.TE-orgnum": "920125298",
+      "category.TL-orgnum": "920125298",
+      "category.TE-entityId": "https://auth.bib.no/simplesaml/module.php/saml/sp/metadata.php/idporten-asker-sp",
+      "category.TL": "Askerbibliotekene"
+    }
+  }
+]
