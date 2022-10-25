@@ -27,12 +27,12 @@
         <springdoc.version>1.6.12</springdoc.version>
         <jaxb.version>2.3.1</jaxb.version>
         <javax.json.version>1.1.4</javax.json.version>
+        <logstash.logback.version>7.2</logstash.logback.version>
         <!--
             Spring Boot v. 2.7.3 uses snakeyaml v. 1.30 which includes issue https://github.com/spring-projects/spring-boot/issues/32221
             So we must manually upgrade it to newer version until Spring Boot contains the upgraded version. Otherwise, container scan will fail.
          -->
         <snakeyaml.version>1.31</snakeyaml.version>
-        <jackson-bom.version>2.14.0-rc1</jackson-bom.version>
     </properties>
 
     <repositories>
@@ -106,6 +106,12 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
         </dependency>
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>${logstash.logback.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
