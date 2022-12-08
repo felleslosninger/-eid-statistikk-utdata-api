@@ -13,6 +13,8 @@ logging:
         apikey: fake-secret
 
 spring:
+  application:
+    name: UtdataAPI
   jackson:
     default-property-inclusion: NON_EMPTY
 
